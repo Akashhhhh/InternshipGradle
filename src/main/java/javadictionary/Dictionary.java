@@ -6,63 +6,71 @@ import java.util.Scanner;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-
 /**
  * This class implement the basic insert,search,autocorrect and autocomplete feature of dictionary
  *
  * @author Akash Gupta
  */
 public class Dictionary {
+    private static Hashtable<String, String> dict = new Hashtable<String, String>();
     private static Logger logger;
     private final static Scanner scan = new Scanner(System.in);
+
     static {
+
+
         System.setProperty("java.util.logging.config.file",
                 "/home/raramuri/IdeaProjects/InternShip/src/main/resources/logging.properties");
 
-        logger= Logger.getLogger(Dictionary.class.getName());
+        logger = Logger.getLogger(Dictionary.class.getName());
 
     }
 
+    /**
+     * This method is used to access the dictionary
+     * @return It returns the object of hashtable type
+     */
+    public Hashtable<String, String> getDict(){
+        return dict;
+    }
     /**
      * This method is use for inserting word in dictionary
      *
      * @param word string that is added in dictionary
      * @param mean meaning of above word
-     * @param dict hashtable which is used as dictionary
      * @return It returns nothing
      */
-    public static void insert(String word, String mean, Hashtable<String, String> dict) {
+    public static boolean insert(String word, String mean) {
         dict.put(word, mean);
-        logger.info("Inserted Word: "+word+ " Meaning: "+mean);
-
+        logger.info("Inserted Word: " + word + " Meaning: " + mean);
+        return true;
     }
 
     /**
      * This method is use for searching the meaning of word in dictionary
      *
      * @param word string that is added in dictionary
-     * @param dict hashtable which is used as dictionary
      * @return It return the string
      */
-    public static String search(String word, Hashtable<String, String> dict) {
-        if(dict.containsKey(word)){
-            logger.info("Meaning: "+ dict.get(word));
+    public static boolean search(String word) {
+        if (dict.containsKey(word)) {
+            logger.info("Meaning: " + dict.get(word));
+            System.out.println("Meaning: " + dict.get(word));
+            return true;
         }
-        else{
-            logger.warning("Entered word is not found");
-        }
-        return dict.get(word);
 
+        logger.info("Entered word is not found");
+        System.out.println("Entered word is not found");
+        return true;
     }
 
     /**
      * This method provide option for autoComplete
      *
-     * @param s string whose autoComplete is required
-     * @param dict hashtable which is used as dictionary
+     * @param s string whose autoComplete is requires
      * @return It return nothing.
      */
-    public static void autoComplete(String s, Hashtable<String, String> dict) {
+    public static Vector<String>  autoComplete(String s) {
 
         int flag = 0;
         Vector<String> ans = new Vector<String>();
@@ -79,14 +87,15 @@ public class Dictionary {
         }
         if (flag == 0) {
             logger.info("There are no suggestion");
+            return ans;
+        }
+
+        logger.info("Suggestion are:");
+        for (int i = 0; i < ans.size(); i++) {
+            logger.info(ans.get(i));
 
         }
-        else{
-            logger.info("Suggestion are:");
-            for(int i=0;i<ans.size();i++){
-                logger.info(ans.get(i));
-            }
-        }
+        return ans;
 
     }
 
@@ -94,10 +103,9 @@ public class Dictionary {
      * This method corrects the give string
      *
      * @param s string which is needed to be corrected
-     * @param dict hashtable which is used as dictionary
      * @return It return nothing
      */
-    public static void autoCorrect(String s, Hashtable<String, String> dict) {
+    public static String autoCorrect(String s) {
         int temp = 0;
         Vector<String> ans = new Vector<String>();
         for (String i : dict.keySet()) {
@@ -113,21 +121,23 @@ public class Dictionary {
                 }
             }
 
-            if(dp[s.length()][i.length()]>temp){
+            if (dp[s.length()][i.length()] > temp) {
                 ans.removeAllElements();
                 temp = dp[s.length()][i.length()];
                 ans.add(i);
-            }
-            else if(dp[s.length()][i.length()]==temp){
+            } else if (dp[s.length()][i.length()]>0&&dp[s.length()][i.length()] == temp) {
                 ans.add(i);
             }
 
         }
-        if(!ans.isEmpty()){
-            Collections.sort(ans);
-            logger.info("Auto Corrected word: "+ans.get(0));
+        if (ans.isEmpty()) {
+            logger.info("no autocorrection");
+            return "";
         }
 
+        Collections.sort(ans);
+        logger.info("Auto Corrected word: " + ans.get(0));
+        return ans.get(0);
 
     }
 
@@ -140,9 +150,9 @@ public class Dictionary {
     public static void main(String[] args) {
 
         boolean temp = true;
-        Hashtable<String, String> dict = new Hashtable<String, String>();
+
         Scanner sc = new Scanner(System.in);
-        //Scanner sc1 = new Scanner(System.in);
+
         while (temp) {
             System.out.println("1.insert\n" +
                     "2.search\n" +
@@ -160,25 +170,25 @@ public class Dictionary {
                     System.out.println("Enter the meaning: ");
                     String mean = sc.next();
 
-                    insert(word1, mean, dict);
+                    insert(word1, mean);
                     break;
                 case 2:
                     System.out.println("Enter the word: ");
                     String word2 = sc.next();
 
-                    System.out.println("Meaning: " + search(word2, dict));
+                    search(word2);
                     break;
                 case 3:
                     System.out.println("Enter the word: ");
                     String word3 = sc.next();
 
-                    autoComplete(word3, dict);
+                    autoComplete(word3);
                     break;
                 case 4:
                     System.out.println("Enter the word: ");
                     String word4 = sc.next();
 
-                    autoCorrect(word4, dict);
+                    autoCorrect(word4);
                     break;
                 case 5:
                     temp = false;
