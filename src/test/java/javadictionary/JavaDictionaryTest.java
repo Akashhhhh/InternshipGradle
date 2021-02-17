@@ -1,11 +1,20 @@
 package javadictionary;
-
-
 import java.util.Vector;
+import java.util.logging.Logger;
 
 public class JavaDictionaryTest {
 
      static Dictionary javaDictionary;
+     private static Logger logger;
+    static {
+
+
+        System.setProperty("java.util.logging.config.file",
+                "/home/raramuri/IdeaProjects/InternShip/src/main/resources/logging.properties");
+
+        logger = Logger.getLogger(Dictionary.class.getName());
+
+    }
      public static boolean dictTest(){
          if(javaDictionary.getDict().isEmpty()){
              return true;
@@ -56,19 +65,28 @@ public class JavaDictionaryTest {
         javaDictionary = new Dictionary();
         if(dictTest()){
             System.out.println("Dictionary test passed");
+            logger.info("Dictionary test passed");
+            if(insertTest()){
+                System.out.println("Insert test passed");
+                logger.info("Insert test passed");
+                if(searchTest()){
+                    System.out.println("Search test passed");
+                    logger.info("Search test passed");
+                    if(autoCompleteTest()){
+                        System.out.println("AutoComplete test passed");
+                        logger.info("AutoComplete test passed");
+                        if(autoCorrectTest()){
+                            System.out.println("AutoCorrect test passed");
+                            logger.info("AutoCorrect test passed");
+                        }
+                    }
+                }
+            }
         }
-        if(insertTest()){
-              System.out.println("Insert test passed");
-        }
-        if(searchTest()){
-              System.out.println("Search test passed");
-        }
-        if(autoCompleteTest()){
-              System.out.println("AutoComplete test passed");
-        }
-        if(autoCorrectTest()){
-              System.out.println("AutoCorrect test passed");
-        }
+
+
+
+
 
     }
 }
