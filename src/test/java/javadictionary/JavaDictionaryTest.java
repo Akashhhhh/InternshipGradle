@@ -79,11 +79,30 @@ public class JavaDictionaryTest {
                             System.out.println("AutoCorrect test passed");
                             logger.info("AutoCorrect test passed");
                         }
+                        else{
+                            System.out.println("AutoCorrect test failed");
+                            logger.info("AutoCorrect test failed");
+                        }
+                    }
+                    else{
+                        System.out.println("AutoComplete test failed");
+                        logger.info("AutoComplete test failed");
                     }
                 }
+                else{
+                    System.out.println("Search test failed");
+                    logger.info("Search test failed");
+                }
+            }
+            else{
+                System.out.println("Insert test failed");
+                logger.info("Insert test failed");
             }
         }
-
+        else{
+            System.out.println("Dictionary test failed");
+            logger.info("Dictionary test failed");
+        }
 
 
 
