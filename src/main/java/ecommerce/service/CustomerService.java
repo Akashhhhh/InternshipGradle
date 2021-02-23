@@ -1,67 +1,86 @@
 package ecommerce.service;
 
-import ecommerce.cache.LruCache;
+import ecommerce.cache.LruCacheService;
 import ecommerce.dao.CustomerDao;
 import ecommerce.entity.Customer;
+import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
 
 import java.sql.Connection;
 import java.util.UUID;
+import java.util.logging.Logger;
 
+/**
+ * This class is used for validating the inputs
+ * @author Akash Gupta
+ */
 public class CustomerService {
+    private static Logger logger = java.util.logging.Logger.getLogger(CustomerService.class.getName());
+    static CustomerDao customerDao= new CustomerDao();
 
+    /**
+     * This class is used for validation when customer is added to database
+     * @param obj object of customer class
+     * @param lru cache
+     * @param con connection
+     * @throws InvalidInputException for throwing user error
+     * @throws ApplicationRuntimeException for throwing application error
+     */
+    public static void addNewCustomer(Customer obj, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        Validator.validateCustomer(obj);
 
-    public static void addNewCustomer(Customer obj, LruCache lru, Connection con) throws InvalidInputException {
-        if (Validate.validateCustomer(obj)) {
-            boolean answer = CustomerDao.insertCustomerToDb(obj,con);
-            lru.put(obj.getEmailId(), obj.getCustId());
-            if (answer) {
-                System.out.println("Customer is added successfully");
-            } else {
-                System.out.println("Something went wrong");
-            }
+        customerDao.insertCustomerToDb(obj, con);
 
+        lru.put(obj.getEmailId(), obj.getCustId());
+        logger.info("Customer added into cache");
 
-        } else throw new InvalidInputException(400, "Check the inputs");
     }
 
-        public static void updateCustomer(String email, String address, LruCache lru, Connection con) throws InvalidInputException {
-            if (Validate.validateEmailId(email)) {
-                boolean answer= CustomerDao.updateCustomerToDb(email,address,con);
-
-                // lru
-                if(!lru.find(email)){
-                    UUID custId = CustomerDao.getCustIdtByEmailId(email,con);
-                    lru.put(email,custId);
-                }
-
-
-                if(answer)
-                {
-                    System.out.println("Product is updated successfully");
-                }
-                else
-                {
-                    System.out.println("Something went wrong");
-                }
-            } else throw new InvalidInputException(400, "Check the inputs");
+    /**
+     * This class is used for validation when customer information is updated in database
+     * @param email email id of customer
+     * @param address address that is updated
+     * @param lru cache
+     * @param con connection
+     * @throws InvalidInputException for throwing user error
+     * @throws ApplicationRuntimeException for throwing application error
+     */
+    public static void updateCustomer(String email, String address, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        if (!Validator.validateEmailId(email)) {
+            throw new InvalidInputException(400, "Check the email id");
         }
-        public static void deleteCustomer(String email, LruCache lru, Connection con) throws InvalidInputException {
-            if (Validate.validateEmailId(email)) {
-                boolean answer = CustomerDao.deleteCustomerToDb(email,con);
-                if(lru.find(email)){
-                    lru.delete(email);
+        customerDao.updateCustomerToDb(email, address, con);
 
-                }
-
-                if (answer) {
-                    System.out.println("Customer is deleted sucessfully");
-                } else {
-                    System.out.println("Something went wrong");
-                }
-
-            } else throw new InvalidInputException(400, "Check the inputs");
+        // lru
+        if (!lru.find(email)) {
+            UUID custId = CustomerDao.getCustIdtByEmailId(email, con);
+            lru.put(email, custId);
+            logger.info("Customer info updated in cache");
         }
+
+
+    }
+
+    /**
+     * This class is used for validation when customer information is deleted from database
+     * @param email email id of customer
+     * @param lru cache
+     * @param con connection
+     * @throws InvalidInputException for throwing user error
+     * @throws ApplicationRuntimeException for throwing application error
+     */
+    public static void deleteCustomer(String email, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        if (!Validator.validateEmailId(email)) {
+            throw new InvalidInputException(400, "Check the inputs");
+
+        }
+        customerDao.deleteCustomerToDb(email, con);
+        if (lru.find(email)) {
+            lru.delete(email);
+            logger.info("Customer deleted from cache");
+        }
+
+    }
 
 }
 

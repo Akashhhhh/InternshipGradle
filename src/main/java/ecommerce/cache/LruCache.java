@@ -2,26 +2,27 @@ package ecommerce.cache;
 
 import java.util.*;
 
-public class LruCache {
-    Set<String> cache;
-    Map<String, UUID> m= new HashMap<String,UUID>();
+public class LruCache <key,value>{
+    Set<key> cache;
+    Map<key, value> m= new HashMap<key,value>();
     int capacity;
 
     public LruCache() {
-        this.cache = new LinkedHashSet<String>(10);
+        this.cache = new LinkedHashSet<key>(10);
+        this.m = new HashMap<key,value>();
         this.capacity = 10;
     }
 
-    public UUID get( String key) {
+    public value get( key k) {
 
-        return m.get(key);
+        return m.get(k);
     }
-    public void delete(String key){
-        cache.remove(key);
+    public void delete(key k){
+        cache.remove(k);
 
     }
-    public boolean find(String key){
-        if(cache.contains(key)){
+    public boolean find(key k){
+        if(cache.contains(k)){
             return true;
         }
         return false;
@@ -32,15 +33,15 @@ public class LruCache {
 //                    ", Value = " + entry.getValue());
 //    }
 
-    public void put(String key,UUID obj) {
+    public void put(key k,value v) {
         if (cache.size() == capacity) {
-            String firstKey = cache.iterator().next();
+            key firstKey = cache.iterator().next();
             cache.remove(firstKey);
             m.remove(firstKey);
         }
 
-        cache.add(key);
-        m.put(key,obj);
+        cache.add(k);
+        m.put(k,v);
     }
 
 

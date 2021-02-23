@@ -2,59 +2,64 @@ package ecommerce.service;
 
 import ecommerce.dao.ProductDao;
 import ecommerce.entity.Product;
+import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
 
 import java.sql.Connection;
 
+/**
+ * This class is used for validating the inputs
+ * @author  Akash Gupta
+ */
 public class ProductService {
 
-    public static void addNewProduct(Product obj, Connection con) throws InvalidInputException {
-        if(Validate.validateProduct(obj)){
-           // dao
-            boolean answer= ProductDao.insertProductToDb(obj,con);
-            if(answer)
-            {
-                System.out.println("Product is added successfully");
-            }
-            else
-            {
-                System.out.println("Something went wrong");
-            }
+    static ProductDao productDao = new ProductDao();
 
+    /**
+     * This method is used for validation when product is added to database
+     * @param obj object of product class
+     * @param con connection
+     * @throws InvalidInputException for throwing user error
+     * @throws ApplicationRuntimeException for throwing application error
+     */
+    public static void addNewProduct(Product obj, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        Validator.validateProduct(obj);
 
-
-        }
-        else throw new InvalidInputException(400, "Check the inputs");
+        // dao
+        productDao.insertProductToDb(obj, con);
     }
-    public static void updateProduct(int qt, String prodName, Connection con) throws InvalidInputException {
-        if(Validate.validateString(prodName)&&qt>=1){
-            //jdbc code..
 
-            boolean answer= ProductDao.updateProductToDb(qt,prodName,con);
-            if(answer)
-            {
-                System.out.println("Product is updated successfully");
-            }
-            else
-            {
-                System.out.println("Something went wrong");
-            }
+    /**
+     * This method is used for validation when product information is updated in database
+     * @param qt units of product that is updated
+     * @param prodName product name
+     * @param con connection
+     * @throws InvalidInputException for throwing user error
+     * @throws ApplicationRuntimeException for throwing application error
+     */
+    public static void updateProduct(int qt, String prodName, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        if (!Validator.validateString(prodName)) {
+            throw new InvalidInputException(400, "Check the prodName");
         }
-        else throw new InvalidInputException(400, "Check the inputs(quantity should be atleast 1)");
+        if (qt <= 0) {
+            throw new InvalidInputException(400, "Quantity should be atleast 1");
+        }
+        productDao.updateProductToDb(qt, prodName, con);
     }
-    public static void deleteProduct(String name, Connection con) throws InvalidInputException {
-        if(Validate.validateString(name)){
-            boolean answer= ProductDao.deleteProductToDb(name,con);
-            if(answer)
-            {
-                System.out.println("Product is deleted sucessfully");
-            }
-            else
-            {
-                System.out.println("Something went wrong");
-            }
+
+    /**
+     * This method is used for validation when product information is deleted in database
+     * @param name product name
+     * @param con connection
+     * @throws InvalidInputException for throwing user error
+     * @throws ApplicationRuntimeException for throwing application error
+     */
+    public static void deleteProduct(String name, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        if (!Validator.validateString(name)) {
+            throw new InvalidInputException(400, "Check the name");
+
         }
-        else throw new InvalidInputException(400, "Check the inputs");
+        productDao.deleteProductToDb(name,con);
     }
 
 }

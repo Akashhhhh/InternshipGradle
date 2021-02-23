@@ -1,14 +1,21 @@
 package ecommerce.exception;
-import java.util.logging.Logger;
 
-public class InvalidInputException extends Exception{
-    private static Logger logger;
-    static {
-        System.setProperty("java.util.logging.config.file",
-                "/home/raramuri/IdeaProjects/InternShip/src/main/resources/logging.properties");
-        logger= java.util.logging.Logger.getLogger(InvalidInputException.class.getName());
+public class InvalidInputException extends Exception {
+    int erroCode;
+    String errorDesc;
+
+    public InvalidInputException(int errorCode, String errorMessage) {
+        this.erroCode  = errorCode;
+        this.errorDesc = errorMessage;
+
+
     }
-    public InvalidInputException(int errorCode, String errorMessage){
-        logger.info(errorMessage);
+
+    public int getErroCode() {
+        return erroCode;
+    }
+
+    public String getErrorDesc() {
+        return errorDesc;
     }
 }

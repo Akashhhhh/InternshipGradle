@@ -1,15 +1,28 @@
 package ecommerce.dao;
 
 import ecommerce.entity.Product;
+import ecommerce.exception.ApplicationRuntimeException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-public class ProductDao {
+import java.sql.SQLException;
+import java.util.logging.Logger;
 
-    public static boolean insertProductToDb(Product obj, Connection con)
-    {
-        boolean f = false;
-        //jdbc code..
+/**
+ * This class is used for creating prepared statements
+ * @author Akash Gupta
+ */
+public class ProductDao {
+    private static Logger logger = java.util.logging.Logger.getLogger(ProductDao.class.getName());
+
+    /**
+     * This method is used for creating insert query
+     * @param obj object of product class
+     * @param con connection
+     * @throws ApplicationRuntimeException for throwing application error
+     */
+    public  void insertProductToDb(Product obj, Connection con) throws ApplicationRuntimeException {
+
         try {
 
             String q = "insert into product(prod_id,prod_name,sell_price,description,type,quantity) values(?,?,?,?,?,?)";
@@ -27,19 +40,23 @@ public class ProductDao {
             //execute
 
             pstmt.executeUpdate();
-            f=true;
+
         }
-        catch(Exception e)
+        catch(SQLException e)
         {
-            e.printStackTrace();
+            throw new ApplicationRuntimeException(e);
         }
-        return f;
+        logger.info("Product added to Database");
     }
 
-    public static boolean deleteProductToDb(String name, Connection con)
-     {
-        boolean f = false;
-        //jdbc code..
+    /**
+     * This method is used for creating delete query
+     * @param name name of product
+     * @param con connection
+     * @throws ApplicationRuntimeException for throwing application error
+     */
+    public static void deleteProductToDb(String name, Connection con) throws ApplicationRuntimeException {
+
         try {
 
 
@@ -55,20 +72,26 @@ public class ProductDao {
             //execute
 
             pstmt.executeUpdate();
-            f=true;
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-        return f;
 
+        }
+        catch(SQLException e)
+        {
+            throw new ApplicationRuntimeException(e);
+        }
+
+       logger.info("Product Deleted from database");
 
     }
-    public static boolean updateProductToDb(int qt, String name, Connection con)
-    {
-        boolean f = false;
-        //jdbc code..
+
+    /**
+     * This method is used for creating delete query
+     * @param qt unit of product that is updated
+     * @param name name of product
+     * @param con connection
+     * @throws ApplicationRuntimeException for throwing application error
+     */
+    public static void updateProductToDb(int qt, String name, Connection con) throws ApplicationRuntimeException {
+
         try {
 
 
@@ -84,14 +107,13 @@ public class ProductDao {
 
             pstmt.executeUpdate();
 
-            f=true;
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-        return f;
 
+        }
+        catch(SQLException e)
+        {
+            throw new ApplicationRuntimeException(e);
+        }
+        logger.info("Product updated in database");
 
     }
 }

@@ -6,7 +6,7 @@ import ecommerce.exception.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Validate {
+public class Validator {
     public static boolean validateEmailId(String email) {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\." +
                 "[a-zA-Z0-9_+&*-]+)*@" +
@@ -43,7 +43,7 @@ public class Validate {
             return true;
         return false;
    }
-    public static boolean validateCustomer(Customer obj) throws InvalidInputException {
+    public static void validateCustomer(Customer obj) throws InvalidInputException {
         String fName = obj.getfName();
         String lName = obj.getlName();
         String emailId = obj.getEmailId();
@@ -65,11 +65,11 @@ public class Validate {
             throw new InvalidInputException(400, "Check Mobile number");
         }
 
-        return true;
+
 
     }
 
-    public static boolean validateProduct(Product obj) throws InvalidInputException {
+    public static void validateProduct(Product obj) throws InvalidInputException {
         String name = obj.getProdName();
         String desc = obj.getDescription();
         String type = obj.getType();
@@ -86,12 +86,10 @@ public class Validate {
             throw new InvalidInputException(400, "Quantity should be atleast 1 ");
         }
 
-       return true;
-
     }
 
 
-    public static boolean validateOrder(Order obj) throws InvalidInputException {
+    public static void validateOrder(Order obj) throws InvalidInputException {
          String qt = obj.getQuantity();
          String prodIds = obj.getProductIds();
          int flag=0;
@@ -121,7 +119,7 @@ public class Validate {
          if(flag==1){
              throw new InvalidInputException(400, "name should contain only alphabets");
          }
-       return true;
+
     }
 
 }

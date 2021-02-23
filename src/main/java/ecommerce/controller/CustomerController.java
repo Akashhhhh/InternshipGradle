@@ -1,7 +1,8 @@
 package ecommerce.controller;
 
-import ecommerce.cache.LruCache;
+import ecommerce.cache.LruCacheService;
 import ecommerce.entity.Customer;
+import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
 import ecommerce.service.CustomerService;
 
@@ -9,11 +10,25 @@ import java.sql.Connection;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
-
+/**
+ * This class manages add,update and delete operation of customer in database
+ *
+ * @author Akash Gupta
+ */
 public class CustomerController {
     Scanner sc = new Scanner(System.in);
+    private static Logger logger = java.util.logging.Logger.getLogger(CustomerController.class.getName());
+    CustomerService customerService = new CustomerService();
 
-    public void add(Logger logger, LruCache lru, Connection con) throws InvalidInputException {
+    /**
+     * This method is used for adding custoner to database
+     *
+     * @param lru cache
+     * @param con connection
+     * @throws InvalidInputException       for throwing user error
+     * @throws ApplicationRuntimeException for throwing applicatio error
+     */
+    public void add(LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
         logger.info("Enter First Name: ");
         String fname = sc.next();
 
@@ -23,39 +38,87 @@ public class CustomerController {
         logger.info("Enter mobile number: ");
         String mob = sc.next();
 
-        logger.info("Enter Email Id: ");;
+        logger.info("Enter Email Id: ");
+        ;
         String email = sc.next();
 
-       logger.info("Enter Address: ");
-        String  address = sc.next();
+        logger.info("Enter Address: ");
+        String address = sc.next();
 
-       logger.info("Enter Date of Birth: ");
-        String  dob = sc.next();
+        logger.info("Enter Date of Birth: ");
+        String dob = sc.next();
 
-        Customer obj = new Customer(fname,lname,mob,email,address,dob);
-        CustomerService.addNewCustomer(obj,lru,con);
+        Customer obj = new Customer(fname, lname, mob, email, address, dob);
+        try {
+            customerService.addNewCustomer(obj, lru, con);
+        } catch (InvalidInputException e) {
+            logger.info("Error Code: " + e.getErroCode() +"|"+ "Error Description: " + e.getErrorDesc());
+
+        } catch (ApplicationRuntimeException e) {
+            logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
+        }
     }
-    public void update(Logger logger, LruCache lru, Connection con) throws InvalidInputException {
+
+    /**
+     * This method is used for updating user information in database
+     *
+     * @param lru cache
+     * @param con connection
+     * @throws InvalidInputException       for throwing user error
+     * @throws ApplicationRuntimeException for throwing application error
+     */
+    public void update(LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
         logger.info("Enter Email Id: ");
         String email = sc.next();
 
         logger.info("Enter the address: ");
         String address = sc.next();
 
-        CustomerService.updateCustomer(email,address,lru,con);
+        try {
+            customerService.updateCustomer(email, address, lru, con);
+        } catch (InvalidInputException e) {
+            logger.info("Error Code: " + e.getErroCode() +"|"+ "Error Description: " + e.getErrorDesc());
+
+        } catch (ApplicationRuntimeException e) {
+            logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
+        }
 
     }
 
-    public  void delete(Logger logger, LruCache lru, Connection con) throws InvalidInputException {
+    /**
+     * This method is used for deleting user information form database;
+     *
+     * @param lru cache
+     * @param con connection
+     * @throws InvalidInputException       for throwing user error
+     * @throws ApplicationRuntimeException for throwing application error
+     */
+    public void delete(LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
         logger.info("Enter Email Id: ");
         String email = sc.next();
-        CustomerService.deleteCustomer(email,lru,con);
+        try {
+            customerService.deleteCustomer(email, lru, con);
+        }catch (InvalidInputException e) {
+            logger.info("Error Code: " + e.getErroCode() +"|"+ "Error Description: " + e.getErrorDesc());
+
+        } catch (ApplicationRuntimeException e) {
+            logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
+        }
 
     }
-    public void customer(Logger logger, LruCache lru, Connection con) throws InvalidInputException {
+
+    /**
+     * This method is used for providing interface
+     *
+     * @param lru cache
+     * @param con connection
+     * @throws InvalidInputException       for throwing user error
+     * @throws ApplicationRuntimeException for throwing application error
+     */
+    public void customer(LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
         logger.info("\n" + "1.Add Customer" + "\n" +
                 "2.Update an existing Customer" + "\n" +
-                "3.Delete an exiting Customer" +"\n"+
+                "3.Delete an exiting Customer" + "\n" +
                 "4.Exit"
         );
 
@@ -63,13 +126,13 @@ public class CustomerController {
         int n = sc.nextInt();
         switch (n) {
             case 1:
-                add(logger,lru,con);
+                add(lru, con);
                 break;
             case 2:
-                update(logger,lru,con);
+                update(lru, con);
                 break;
             case 3:
-                delete(logger,lru,con);
+                delete(lru, con);
                 break;
             case 4:
                 break;
