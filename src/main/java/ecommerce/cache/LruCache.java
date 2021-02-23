@@ -52,11 +52,15 @@ public class LruCache <key,value>{
         }
         return false;
     }
-//    public void display() {
-//        for (Map.Entry<String,Object> entry : m.entrySet())
-//            System.out.println("Key = " + entry.getKey() +
-//                    ", Value = " + entry.getValue());
-//    }
+
+    /**
+     * This method is used for displaying the content of cache
+     */
+    public void display() {
+        for (Map.Entry<key,value> entry : m.entrySet())
+            System.out.println("Key = " + entry.getKey() +
+                    ", Value = " + entry.getValue());
+    }
 
     /**
      * This method is used for putting value in the cache

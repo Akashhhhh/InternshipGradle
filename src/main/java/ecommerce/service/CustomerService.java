@@ -12,22 +12,25 @@ import java.util.logging.Logger;
 
 /**
  * This class is used for validating the inputs
+ *
  * @author Akash Gupta
  */
 public class CustomerService {
     private static Logger logger = java.util.logging.Logger.getLogger(CustomerService.class.getName());
-    static CustomerDao customerDao= new CustomerDao();
+    static CustomerDao customerDao = new CustomerDao();
+    Validator validator = new Validator();
 
     /**
      * This class is used for validation when customer is added to database
+     *
      * @param obj object of customer class
      * @param lru cache
      * @param con connection
-     * @throws InvalidInputException for throwing user error
+     * @throws InvalidInputException       for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public static void addNewCustomer(Customer obj, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        Validator.validateCustomer(obj);
+    public void addNewCustomer(Customer obj, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        validator.validateCustomer(obj);
 
         customerDao.insertCustomerToDb(obj, con);
 
@@ -38,15 +41,16 @@ public class CustomerService {
 
     /**
      * This class is used for validation when customer information is updated in database
-     * @param email email id of customer
+     *
+     * @param email   email id of customer
      * @param address address that is updated
-     * @param lru cache
-     * @param con connection
-     * @throws InvalidInputException for throwing user error
+     * @param lru     cache
+     * @param con     connection
+     * @throws InvalidInputException       for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public static void updateCustomer(String email, String address, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        if (!Validator.validateEmailId(email)) {
+    public void updateCustomer(String email, String address, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        if (!validator.validateEmailId(email)) {
             throw new InvalidInputException(400, "Check the email id");
         }
         customerDao.updateCustomerToDb(email, address, con);
@@ -63,14 +67,15 @@ public class CustomerService {
 
     /**
      * This class is used for validation when customer information is deleted from database
+     *
      * @param email email id of customer
-     * @param lru cache
-     * @param con connection
-     * @throws InvalidInputException for throwing user error
+     * @param lru   cache
+     * @param con   connection
+     * @throws InvalidInputException       for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public static void deleteCustomer(String email, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        if (!Validator.validateEmailId(email)) {
+    public void deleteCustomer(String email, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        if (!validator.validateEmailId(email)) {
             throw new InvalidInputException(400, "Check the inputs");
 
         }

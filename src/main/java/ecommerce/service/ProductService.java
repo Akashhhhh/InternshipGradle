@@ -14,7 +14,7 @@ import java.sql.Connection;
 public class ProductService {
 
     static ProductDao productDao = new ProductDao();
-
+    Validator validator = new Validator();
     /**
      * This method is used for validation when product is added to database
      * @param obj object of product class
@@ -22,8 +22,8 @@ public class ProductService {
      * @throws InvalidInputException for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public static void addNewProduct(Product obj, Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        Validator.validateProduct(obj);
+    public  void addNewProduct(Product obj, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        validator.validateProduct(obj);
 
         // dao
         productDao.insertProductToDb(obj, con);
@@ -37,8 +37,8 @@ public class ProductService {
      * @throws InvalidInputException for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public static void updateProduct(int qt, String prodName, Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        if (!Validator.validateString(prodName)) {
+    public void updateProduct(int qt, String prodName, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        if (!validator.validateString(prodName)) {
             throw new InvalidInputException(400, "Check the prodName");
         }
         if (qt <= 0) {
@@ -54,12 +54,17 @@ public class ProductService {
      * @throws InvalidInputException for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public static void deleteProduct(String name, Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        if (!Validator.validateString(name)) {
+    public  void deleteProduct(String name, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        if (!validator.validateString(name)) {
             throw new InvalidInputException(400, "Check the name");
 
         }
         productDao.deleteProductToDb(name,con);
+    }
+    public  void checkProdName(String prodName)throws InvalidInputException{
+        if(!validator.validateString(prodName)){
+            throw new InvalidInputException(400, "Check the product name");
+        }
     }
 
 }

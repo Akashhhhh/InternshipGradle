@@ -4,7 +4,6 @@ import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
 import ecommerce.service.ProductService;
-import ecommerce.service.Validator;
 
 import java.sql.Connection;
 import java.util.Scanner;
@@ -27,7 +26,7 @@ public class ProductController {
      * @throws InvalidInputException       for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public void add(Connection con) throws InvalidInputException, ApplicationRuntimeException {
+    public void add(Connection con)  {
         logger.info("Enter product name: ");
         String prodName = sc.next();
 
@@ -62,7 +61,7 @@ public class ProductController {
      * @throws InvalidInputException       for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public void update(Connection con) throws InvalidInputException, ApplicationRuntimeException {
+    public void update(Connection con)  {
         logger.info("Enter product name: ");
         String prodName = sc.next();
 
@@ -88,14 +87,13 @@ public class ProductController {
      * @throws InvalidInputException       for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public void delete(Connection con) throws InvalidInputException, ApplicationRuntimeException {
+    public void delete(Connection con)  {
         logger.info("Enter product name: ");
         String prodName = sc.next();
 
-        if (!Validator.validateString(prodName))
-            throw new InvalidInputException(400, "Check the inputs");
 
         try {
+            productService.checkProdName(prodName);
             productService.deleteProduct(prodName, con);
         }catch (InvalidInputException e) {
             logger.info("Error Code: " + e.getErroCode() +"|"+ "Error Description: " + e.getErrorDesc());
@@ -114,7 +112,7 @@ public class ProductController {
      * @throws InvalidInputException       for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public void admin(Connection con) throws InvalidInputException, ApplicationRuntimeException {
+    public void admin(Connection con) {
 
         logger.info("\n" + "1.Add Product" + "\n" +
                 "2.Update an existing Product" + "\n" +

@@ -33,8 +33,13 @@ public class OrderController {
      * @param con    connection
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public void placeOrder(UUID custId, String name, Connection con) throws ApplicationRuntimeException{
-        Map<UUID, Product> menu = orderDao.menu(con);
+    public void placeOrder(UUID custId, String name, Connection con) {
+        Map<UUID, Product> menu = null;
+        try {
+            menu = orderDao.menu(con);
+        } catch (ApplicationRuntimeException e) {
+            logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
+        }
         float totalPrice = 0;
         String prodIds = "";
         String quantities = "";
@@ -77,7 +82,7 @@ public class OrderController {
      * @param con  connection
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public void deleteOrder(String name, Connection con) throws ApplicationRuntimeException {
+    public void deleteOrder(String name, Connection con) {
         try {
             orderService.deleteOrder(name, con);
         } catch (InvalidInputException e) {
@@ -95,8 +100,13 @@ public class OrderController {
      * @param con  connection
      * @throws InvalidInputException for throwing user error
      */
-    public void showOrder(String name, Connection con) throws InvalidInputException {
-        // OrderService.showOrder(name);
+    public void showOrder(String name, Connection con) {
+        try {
+            orderService.showOrder(name, con);
+        } catch (InvalidInputException e) {
+            logger.info("Error Code: " + e.getErroCode() + "|" + "Error Description: " + e.getErrorDesc());
+
+        }
     }
 
     /**
@@ -107,7 +117,7 @@ public class OrderController {
      * @throws InvalidInputException       for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public void order(LruCacheService lru, Connection con) throws ApplicationRuntimeException {
+    public void order(LruCacheService lru, Connection con) {
         logger.info("Enter your email id: ");
         String email = sc.next();
         UUID cust_id = null;
@@ -127,35 +137,29 @@ public class OrderController {
                     "3.Show orders" + "\n" +
                     "4.Exit");
             int n = sc.nextInt();
-            try {
-                switch (n) {
 
-                    case 1:
-                        logger.info("Provide a name to your orders: " + "\n");
-                        String name1 = sc.next();
-                        placeOrder(cust_id, name1, con);
-                        break;
-                    case 2:
-                        logger.info("Enter the name of your order: " + "\n");
-                        String name2 = sc.next();
-                        deleteOrder(name2, con);
-                        break;
-                    case 3:
-                        logger.info("Enter the name of your order: " + "\n");
-                        String name3 = sc.next();
-                        showOrder(name3, con);
-                        break;
-                    case 4:
-                        temp = false;
-                        break;
+            switch (n) {
+
+                case 1:
+                    logger.info("Provide a name to your orders: " + "\n");
+                    String name1 = sc.next();
+                    placeOrder(cust_id, name1, con);
+                    break;
+                case 2:
+                    logger.info("Enter the name of your order: " + "\n");
+                    String name2 = sc.next();
+                    deleteOrder(name2, con);
+                    break;
+                case 3:
+                    logger.info("Enter the name of your order: " + "\n");
+                    String name3 = sc.next();
+                    showOrder(name3, con);
+                    break;
+                case 4:
+                    temp = false;
+                    break;
 
 
-                }
-            } catch (InvalidInputException e) {
-                logger.info("Error Code: " + e.getErroCode() + "|" + "Error Description: " + e.getErrorDesc());
-
-            } catch (ApplicationRuntimeException e) {
-                logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
             }
 
 

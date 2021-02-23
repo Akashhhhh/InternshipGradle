@@ -14,7 +14,7 @@ import java.util.UUID;
 public class LruCacheService<key, value> {
     private static java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LruCacheService.class.getName());
     Set<key> cache = null;
-    Map<key, value> m = new HashMap<key, value>();
+    Map<String, UUID> m = new HashMap<String, UUID>();
     int capacity;
 
     /**
@@ -56,25 +56,25 @@ public class LruCacheService<key, value> {
         }
         return false;
     }
-//    public void display() {
-//        for (Map.Entry<String,Object> entry : m.entrySet())
-//            System.out.println("Key = " + entry.getKey() +
-//                    ", Value = " + entry.getValue());
-//    }
+    public void display() {
+        for (Map.Entry<String, UUID> entry : m.entrySet())
+            System.out.println("Key = " + entry.getKey() +
+                    ", Value = " + entry.getValue());
+    }
 
     /**
      * This method is used for inserting into the cache
      * @param k key
      * @param v value
      */
-    public void put(key k, value v) {
+    public void put(String k, UUID v) {
         if (cache.size() == capacity) {
-            key firstKey = cache.iterator().next();
+            String  firstKey = (String) cache.iterator().next();
             cache.remove(firstKey);
             m.remove(firstKey);
         }
 
-        cache.add(k);
+        cache.add((key) k);
         m.put(k, v);
     }
 

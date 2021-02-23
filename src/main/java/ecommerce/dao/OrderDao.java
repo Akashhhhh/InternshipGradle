@@ -158,7 +158,7 @@ public class OrderDao {
         logger.info("Order deleted from database");
 
     }
-//    public static boolean showOrderToDb(String name) {
+    public static boolean showOrderToDb(String name) {
 //        boolean f = false;
 //        //jdbc code..
 //        try {
@@ -185,6 +185,7 @@ public class OrderDao {
 //            e.printStackTrace();
 //        }
 //        return f;
-//    }
-//
+        return true;
+    }
+
 }

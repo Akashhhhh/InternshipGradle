@@ -14,11 +14,14 @@ import java.util.Scanner;
 import java.util.logging.Logger;
 
 import static java.lang.Class.forName;
+
 import ecommerce.util.CreateConnection;
+
 import java.sql.Connection;
 
 /**
  * This class is used to provide an interface to user
+ *
  * @author Akash Gupta
  */
 public class EcomApp {
@@ -32,17 +35,18 @@ public class EcomApp {
     private static void initializeResources() {
         System.setProperty("java.util.logging.config.file",
                 "/home/raramuri/IdeaProjects/InternShip/src/main/resources/logging.properties");
-        con=CreateConnection.create();
+        con = CreateConnection.create();
         lru = new LruCacheService();
     }
 
     /**
+     * This method is the entry point of our application
      *
      * @param args Unused
-     * @throws InvalidInputException for user made error
+     * @throws InvalidInputException       for user made error
      * @throws ApplicationRuntimeException for application error
      */
-    public static void main(String[] args) throws ApplicationRuntimeException, InvalidInputException {
+    public static void main(String[] args) {
         initializeResources();
         logger = Logger.getLogger(EcomApp.class.getName());
         boolean temp = true;
@@ -61,13 +65,13 @@ public class EcomApp {
                     productController.admin(con);
                     break;
                 case 2:
-                  CustomerController customerController = new CustomerController();
-                    customerController.customer(lru,con);
+                    CustomerController customerController = new CustomerController();
+                    customerController.customer(lru, con);
                     break;
                 case 3:
 
                     OrderController orderController = new OrderController();
-                    orderController.order(lru,con);
+                    orderController.order(lru, con);
                     break;
                 case 4:
                     logger.info("Shopping Ended");
