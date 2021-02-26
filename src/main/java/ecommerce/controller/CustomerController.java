@@ -25,15 +25,13 @@ public class CustomerController {
      *
      * @param lru cache
      * @param con connection
-     * @throws InvalidInputException       for throwing user error
-     * @throws ApplicationRuntimeException for throwing applicatio error
      */
-    public void add(LruCacheService lru, Connection con) {
+    public void add(LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
         logger.info("Enter First Name: ");
-        String fname = sc.next();
+        String fName = sc.next();
 
         logger.info("Enter Last Name: ");
-        String lname = sc.next();
+        String lName = sc.next();
 
         logger.info("Enter mobile number: ");
         String mob = sc.next();
@@ -48,16 +46,11 @@ public class CustomerController {
         logger.info("Enter Date of Birth: ");
         String dob = sc.next();
 
-        Customer obj = new Customer(fname, lname, mob, email, address, dob);
-        try {
+        Customer obj = new Customer(fName, lName, mob, email, address, dob);
+
             customerService.addNewCustomer(obj, lru, con);
             logger.info("Customer added successfully");
-        } catch (InvalidInputException e) {
-            logger.info("Error Code: " + e.getErroCode() +"|"+ "Error Description: " + e.getErrorDesc());
 
-        } catch (ApplicationRuntimeException e) {
-            logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
-        }
 
     }
 
@@ -66,25 +59,18 @@ public class CustomerController {
      *
      * @param lru cache
      * @param con connection
-     * @throws InvalidInputException       for throwing user error
-     * @throws ApplicationRuntimeException for throwing application error
      */
-    public void update(LruCacheService lru, Connection con)  {
+    public void update(LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
         logger.info("Enter Email Id: ");
         String email = sc.next();
 
         logger.info("Enter the address: ");
         String address = sc.next();
 
-        try {
+
             customerService.updateCustomer(email, address, lru, con);
             logger.info("Customer information updated successfully in database");
-        } catch (InvalidInputException e) {
-            logger.info("Error Code: " + e.getErroCode() +"|"+ "Error Description: " + e.getErrorDesc());
 
-        } catch (ApplicationRuntimeException e) {
-            logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
-        }
 
     }
 
@@ -93,21 +79,14 @@ public class CustomerController {
      *
      * @param lru cache
      * @param con connection
-     * @throws InvalidInputException       for throwing user error
-     * @throws ApplicationRuntimeException for throwing application error
      */
-    public void delete(LruCacheService lru, Connection con)  {
+    public void delete(LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
         logger.info("Enter Email Id: ");
         String email = sc.next();
-        try {
+
             customerService.deleteCustomer(email, lru, con);
             logger.info("Customer is deleted successfully from database");
-        }catch (InvalidInputException e) {
-            logger.info("Error Code: " + e.getErroCode() +"|"+ "Error Description: " + e.getErrorDesc());
 
-        } catch (ApplicationRuntimeException e) {
-            logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
-        }
 
     }
 
@@ -116,10 +95,8 @@ public class CustomerController {
      *
      * @param lru cache
      * @param con connection
-     * @throws InvalidInputException       for throwing user error
-     * @throws ApplicationRuntimeException for throwing application error
      */
-    public void customer(LruCacheService lru, Connection con) {
+    public void customer(LruCacheService lru, Connection con){
         logger.info("\n" + "1.Add Customer" + "\n" +
                 "2.Update an existing Customer" + "\n" +
                 "3.Delete an exiting Customer" + "\n" +
@@ -128,19 +105,26 @@ public class CustomerController {
 
 
         int n = sc.nextInt();
-        switch (n) {
-            case 1:
-                add(lru, con);
-                break;
-            case 2:
-                update(lru, con);
-                break;
-            case 3:
-                delete(lru, con);
-                break;
-            case 4:
-                break;
+        try {
+            switch (n) {
+                case 1:
+                    add(lru, con);
+                    break;
+                case 2:
+                    update(lru, con);
+                    break;
+                case 3:
+                    delete(lru, con);
+                    break;
+                case 4:
+                    break;
 
+            }
+        }catch (InvalidInputException e) {
+            logger.info("Error Code: " + e.getErroCode() + "|" + "Error Description: " + e.getErrorDesc());
+
+        } catch (ApplicationRuntimeException e) {
+            logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
         }
     }
 

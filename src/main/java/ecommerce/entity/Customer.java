@@ -1,17 +1,26 @@
 package ecommerce.entity;
 
+import ecommerce.annotation.InvalidNameAnnotation;
+
 import java.util.UUID;
 
 public class Customer {
     UUID custId =UUID.randomUUID(); // customer id
+
+    @InvalidNameAnnotation
     private String fName;
+
+    @InvalidNameAnnotation
     private String lName;
+
     private String mobileNo;
     private String emailId;
     private String address;
     private String dateOfBirth;
     private String timeCreated; // when user creates its account
     private String timeLastUpdated; // when user updates it account
+
+
     public Customer(String fName, String lName, String mobileNo, String emailId, String address, String dateOfBirth){
         this.fName = fName;
         this.lName = lName;

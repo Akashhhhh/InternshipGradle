@@ -13,8 +13,19 @@ import java.sql.Connection;
  */
 public class ProductService {
 
-    static ProductDao productDao = new ProductDao();
-    Validator validator = new Validator();
+    static ProductDao productDao ;
+    Validator validator ;
+    public ProductService(ProductDao productDao, Validator validator){
+        this.productDao = productDao;
+        this.validator = validator;
+
+    }
+    public ProductService(){
+        productDao = new ProductDao();
+        validator = new Validator();
+
+    }
+
     /**
      * This method is used for validation when product is added to database
      * @param obj object of product class
@@ -24,7 +35,6 @@ public class ProductService {
      */
     public  void addNewProduct(Product obj, Connection con) throws InvalidInputException, ApplicationRuntimeException {
         validator.validateProduct(obj);
-
         // dao
         productDao.insertProductToDb(obj, con);
     }
@@ -42,7 +52,7 @@ public class ProductService {
             throw new InvalidInputException(400, "Check the prodName");
         }
         if (qt <= 0) {
-            throw new InvalidInputException(400, "Quantity should be atleast 1");
+            throw new InvalidInputException(400, "Quantity should be at least 1");
         }
         productDao.updateProductToDb(qt, prodName, con);
     }

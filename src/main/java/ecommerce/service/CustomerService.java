@@ -16,9 +16,21 @@ import java.util.logging.Logger;
  * @author Akash Gupta
  */
 public class CustomerService {
-    private static Logger logger = java.util.logging.Logger.getLogger(CustomerService.class.getName());
-    static CustomerDao customerDao = new CustomerDao();
-    Validator validator = new Validator();
+    private static Logger logger;
+    CustomerDao customerDao;
+    Validator validator ;
+
+    public CustomerService(CustomerDao customerDao,Validator validator,Logger logger){
+      this.customerDao = customerDao;
+      this.validator = validator;
+      this.logger = logger;
+    }
+    public CustomerService(){
+        customerDao = new CustomerDao();
+        validator = new Validator();
+        logger=java.util.logging.Logger.getLogger(CustomerService.class.getName());
+    }
+
 
     /**
      * This class is used for validation when customer is added to database
@@ -57,7 +69,7 @@ public class CustomerService {
 
         // lru
         if (!lru.find(email)) {
-            UUID custId = CustomerDao.getCustIdtByEmailId(email, con);
+            UUID custId = customerDao.getCustIdtByEmailId(email, con);
             lru.put(email, custId);
             logger.info("Customer info updated in cache");
         }

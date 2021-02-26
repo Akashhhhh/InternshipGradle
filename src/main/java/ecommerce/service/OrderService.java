@@ -3,10 +3,13 @@ package ecommerce.service;
 import ecommerce.cache.LruCacheService;
 import ecommerce.controller.OrderController;
 import ecommerce.dao.OrderDao;
+import ecommerce.entity.Order;
+import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
 
 import java.sql.Connection;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -18,8 +21,19 @@ import java.util.logging.Logger;
 public class OrderService {
 
     private static Logger logger = java.util.logging.Logger.getLogger(OrderController.class.getName());
-    OrderDao orderDao = new OrderDao();
-    Validator validator = new Validator();
+    OrderDao orderDao;
+    Validator validator;
+
+    public OrderService(OrderDao orderDao, Validator validator){
+        this.orderDao= orderDao;
+        this.validator = validator;
+
+    }
+    public OrderService(){
+        orderDao = new OrderDao();
+        validator = new Validator();
+
+    }
 
     /**
      * This is used for validation when order is deleted
@@ -31,7 +45,7 @@ public class OrderService {
      */
     public void deleteOrder(String name, Connection con) throws ApplicationRuntimeException, InvalidInputException {
         if (validator.validateString(name)) {
-            OrderDao.deleteOrderToDb(name, con);
+            orderDao.deleteOrderToDb(name, con);
         } else throw new InvalidInputException(400, "Check the name");
     }
 
@@ -64,11 +78,21 @@ public class OrderService {
      *
      * @param name name of customer
      * @param con  connection
+     * @param order
      * @throws InvalidInputException for throwing user error
      */
-    public void showOrder(String name, Connection con) throws InvalidInputException {
+    public void showOrder(String name, Connection con, Order order) throws InvalidInputException, ApplicationRuntimeException {
         if (validator.validateString(name)) {
-            OrderDao.showOrderToDb(name);
+            orderDao.showOrderToDb(name,con,order);
         } else throw new InvalidInputException(400, "Check the name");
+    }
+
+    public Map<UUID, Product> getMenu(Connection con) throws ApplicationRuntimeException {
+        Map<UUID, Product> menu=orderDao.menu(con);
+        return menu;
+    }
+
+    public void addOrder(Order od, UUID custId, String name, Connection con) throws ApplicationRuntimeException {
+        orderDao.addOrderToDb(od, custId, name, con);
     }
 }

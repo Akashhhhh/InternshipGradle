@@ -77,7 +77,7 @@ public class Validator {
      * @param obj
      * @throws InvalidInputException
      */
-    public static void validateCustomer(Customer obj) throws InvalidInputException {
+    public  boolean validateCustomer(Customer obj) throws InvalidInputException {
         String fName = obj.getfName();
         String lName = obj.getlName();
         String emailId = obj.getEmailId();
@@ -99,7 +99,7 @@ public class Validator {
             throw new InvalidInputException(400, "Check Mobile number");
         }
 
-
+      return true;
     }
 
     /**
@@ -107,7 +107,7 @@ public class Validator {
      * @param obj object of product class
      * @throws InvalidInputException for throwing user error
      */
-    public static void validateProduct(Product obj) throws InvalidInputException {
+    public boolean  validateProduct(Product obj) throws InvalidInputException {
         String name = obj.getProdName();
         String desc = obj.getDescription();
         String type = obj.getType();
@@ -123,7 +123,7 @@ public class Validator {
         if (qt <= 0) {
             throw new InvalidInputException(400, "Quantity should be atleast 1 ");
         }
-
+        return true;
     }
 
     /**
@@ -131,12 +131,12 @@ public class Validator {
      * @param obj object of order class
      * @throws InvalidInputException for throwing user error
      */
-    public static void validateOrder(Order obj) throws InvalidInputException {
+    public boolean validateOrder(Order obj) throws InvalidInputException {
         String qt = obj.getQuantity();
         String prodIds = obj.getProductIds();
         int flag = 0;
         for (int i = 0; i < qt.length(); i++) {
-            if (qt.charAt(i) >= '1' && qt.charAt(i) <= '9' && qt.charAt(i) == ',') {
+            if (qt.charAt(i) >= '1' && qt.charAt(i) <= '9' || qt.charAt(i) == ',') {
 
             } else
                 flag = 1;
@@ -149,7 +149,7 @@ public class Validator {
 
 
         for (int i = 0; i < prodIds.length(); i++) {
-            if (prodIds.charAt(i) >= '1' && prodIds.charAt(i) <= '9' && prodIds.charAt(i) == ',') {
+            if (prodIds.charAt(i) >= '1' && prodIds.charAt(i) <= '9' ||prodIds.charAt(i) == ',') {
 
             } else
                 flag = 1;
@@ -159,7 +159,6 @@ public class Validator {
         if (flag == 1) {
             throw new InvalidInputException(400, "name should contain only alphabets");
         }
-
+      return true;
     }
-
 }

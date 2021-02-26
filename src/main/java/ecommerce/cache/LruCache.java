@@ -11,6 +11,8 @@ import java.util.*;
 public class LruCache <key,value>{
     Set<key> cache;
     Map<key, value> m= new HashMap<key,value>();
+    private static java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LruCache.class.getName());
+
     int capacity;
 
     /**
@@ -19,7 +21,7 @@ public class LruCache <key,value>{
     public LruCache() {
         this.cache = new LinkedHashSet<key>(10);
         this.m = new HashMap<key,value>();
-        this.capacity = 10;
+        this.capacity = 2;
     }
 
     /**
@@ -58,7 +60,7 @@ public class LruCache <key,value>{
      */
     public void display() {
         for (Map.Entry<key,value> entry : m.entrySet())
-            System.out.println("Key = " + entry.getKey() +
+            logger.info("Key = " + entry.getKey() +
                     ", Value = " + entry.getValue());
     }
 
@@ -67,7 +69,7 @@ public class LruCache <key,value>{
      * @param k key
      * @param v value
      */
-    public void put(key k,value v) {
+    public boolean put(key k,value v) {
         if (cache.size() == capacity) {
             key firstKey = cache.iterator().next();
             cache.remove(firstKey);
@@ -76,6 +78,7 @@ public class LruCache <key,value>{
 
         cache.add(k);
         m.put(k,v);
+        return true;
     }
 
 

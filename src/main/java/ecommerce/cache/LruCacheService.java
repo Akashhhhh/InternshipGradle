@@ -1,9 +1,6 @@
 package ecommerce.cache;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * This is a specific lru cache for customer
@@ -15,6 +12,7 @@ public class LruCacheService<key, value> {
     private static java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LruCacheService.class.getName());
     Set<key> cache = null;
     Map<String, UUID> m = new HashMap<String, UUID>();
+
     int capacity;
 
     /**
@@ -40,9 +38,9 @@ public class LruCacheService<key, value> {
      * Tis method is used for deleting
      * @param k key
      */
-    public void delete(String k) {
+    public boolean delete(String k) {
         cache.remove(k);
-
+        return true;
     }
 
     /**
@@ -56,10 +54,15 @@ public class LruCacheService<key, value> {
         }
         return false;
     }
-    public void display() {
+    public Vector<String> display() {
+        Vector<String>v = new Vector<>();
         for (Map.Entry<String, UUID> entry : m.entrySet())
-            System.out.println("Key = " + entry.getKey() +
+        {
+            logger.info("Key = " + entry.getKey() +
                     ", Value = " + entry.getValue());
+            v.add(entry.getKey());
+        }
+           return v;
     }
 
     /**
@@ -67,7 +70,7 @@ public class LruCacheService<key, value> {
      * @param k key
      * @param v value
      */
-    public void put(String k, UUID v) {
+    public boolean put(String k, UUID v) {
         if (cache.size() == capacity) {
             String  firstKey = (String) cache.iterator().next();
             cache.remove(firstKey);
@@ -76,6 +79,7 @@ public class LruCacheService<key, value> {
 
         cache.add((key) k);
         m.put(k, v);
+        return true;
     }
 
 }

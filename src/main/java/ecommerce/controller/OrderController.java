@@ -31,15 +31,12 @@ public class OrderController {
      * @param custId customer id
      * @param name   name of product
      * @param con    connection
-     * @throws ApplicationRuntimeException for throwing application error
      */
-    public void placeOrder(UUID custId, String name, Connection con) {
+    public void placeOrder(UUID custId, String name, Connection con) throws ApplicationRuntimeException {
         Map<UUID, Product> menu = null;
-        try {
-            menu = orderDao.menu(con);
-        } catch (ApplicationRuntimeException e) {
-            logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
-        }
+
+        menu = orderService.getMenu(con);
+
         float totalPrice = 0;
         String prodIds = "";
         String quantities = "";
@@ -68,11 +65,9 @@ public class OrderController {
 
         }
         Order od = new Order(custId, totalPrice, quantities, prodIds);
-        try {
-            orderDao.addOrderToDb(od, custId, name, con);
-        } catch (ApplicationRuntimeException e) {
-            logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
-        }
+        orderService.addOrder(od,custId,name,con);
+
+
     }
 
     /**
@@ -80,17 +75,11 @@ public class OrderController {
      *
      * @param name name of product
      * @param con  connection
-     * @throws ApplicationRuntimeException for throwing application error
      */
-    public void deleteOrder(String name, Connection con) {
-        try {
-            orderService.deleteOrder(name, con);
-        } catch (InvalidInputException e) {
-            logger.info("Error Code: " + e.getErroCode() + "|" + "Error Description: " + e.getErrorDesc());
+    public void deleteOrder(String name, Connection con) throws ApplicationRuntimeException, InvalidInputException {
 
-        } catch (ApplicationRuntimeException e) {
-            logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
-        }
+        orderService.deleteOrder(name, con);
+
     }
 
     /**
@@ -98,15 +87,11 @@ public class OrderController {
      *
      * @param name product name
      * @param con  connection
-     * @throws InvalidInputException for throwing user error
      */
-    public void showOrder(String name, Connection con) {
-        try {
-            orderService.showOrder(name, con);
-        } catch (InvalidInputException e) {
-            logger.info("Error Code: " + e.getErroCode() + "|" + "Error Description: " + e.getErrorDesc());
+    public void showOrder(String name, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        Order order=null;
+        orderService.showOrder(name, con,order);
 
-        }
     }
 
     /**
@@ -114,22 +99,14 @@ public class OrderController {
      *
      * @param lru cache
      * @param con connection
-     * @throws InvalidInputException       for throwing user error
-     * @throws ApplicationRuntimeException for throwing application error
      */
-    public void order(LruCacheService lru, Connection con) {
+    public void order(LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
         logger.info("Enter your email id: ");
         String email = sc.next();
         UUID cust_id = null;
-        try {
-            cust_id = orderService.CheckEmailId(email, lru, con);
 
-        } catch (InvalidInputException e) {
-            logger.info("Error Code: " + e.getErroCode() + "|" + "Error Description: " + e.getErrorDesc());
+        cust_id = orderService.CheckEmailId(email, lru, con);
 
-        } catch (ApplicationRuntimeException e) {
-            logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
-        }
 
         boolean temp = true;
         while (temp) {
@@ -138,31 +115,37 @@ public class OrderController {
                     "4.Exit");
             int n = sc.nextInt();
 
-            switch (n) {
 
-                case 1:
-                    logger.info("Provide a name to your orders: " + "\n");
-                    String name1 = sc.next();
-                    placeOrder(cust_id, name1, con);
-                    break;
-                case 2:
-                    logger.info("Enter the name of your order: " + "\n");
-                    String name2 = sc.next();
-                    deleteOrder(name2, con);
-                    break;
-                case 3:
-                    logger.info("Enter the name of your order: " + "\n");
-                    String name3 = sc.next();
-                    showOrder(name3, con);
-                    break;
-                case 4:
-                    temp = false;
-                    break;
+            try {
+                switch (n) {
+
+                    case 1:
+                        logger.info("Provide a name to your orders: " + "\n");
+                        String name1 = sc.next();
+                        placeOrder(cust_id, name1, con);
+                        break;
+                    case 2:
+                        logger.info("Enter the name of your order: " + "\n");
+                        String name2 = sc.next();
+                        deleteOrder(name2, con);
+                        break;
+                    case 3:
+                        logger.info("Enter the name of your order: " + "\n");
+                        String name3 = sc.next();
+                        showOrder(name3, con);
+                        break;
+                    case 4:
+                        temp = false;
+                        break;
 
 
+                }
+            } catch (InvalidInputException e) {
+                logger.info("Error Code: " + e.getErroCode() + "|" + "Error Description: " + e.getErrorDesc());
+
+            } catch (ApplicationRuntimeException e) {
+                logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
             }
-
-
         }
 
 

@@ -1,16 +1,15 @@
 package ecommerce.exception;
 
-import java.sql.SQLException;
-
 public class ApplicationRuntimeException extends Exception {
 
     int errorCode;
     String errorDesc;
 
 
-    public ApplicationRuntimeException(SQLException e) {
-        this.errorCode = e.getErrorCode();
-        this.errorDesc = e.getMessage();
+    public ApplicationRuntimeException(int errorCode,String errorDesc,Throwable e) {
+        super(e);
+        this.errorCode = errorCode;
+        this.errorDesc = errorDesc;
 
     }
 

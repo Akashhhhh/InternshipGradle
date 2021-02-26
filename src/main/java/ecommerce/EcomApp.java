@@ -1,23 +1,16 @@
 package ecommerce;
 
-import ecommerce.cache.LruCache;
 import ecommerce.cache.LruCacheService;
 import ecommerce.controller.CustomerController;
 import ecommerce.controller.OrderController;
 import ecommerce.controller.ProductController;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
+import ecommerce.util.Connection;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.logging.Logger;
-
-import static java.lang.Class.forName;
-
-import ecommerce.util.CreateConnection;
-
-import java.sql.Connection;
 
 /**
  * This class is used to provide an interface to user
@@ -26,7 +19,7 @@ import java.sql.Connection;
  */
 public class EcomApp {
     static Logger logger;
-    static Connection con;
+    static java.sql.Connection con;
     static LruCacheService lru;
 
     /**
@@ -35,7 +28,7 @@ public class EcomApp {
     private static void initializeResources() {
         System.setProperty("java.util.logging.config.file",
                 "/home/raramuri/IdeaProjects/InternShip/src/main/resources/logging.properties");
-        con = CreateConnection.create();
+        con = Connection.create();
         lru = new LruCacheService();
     }
 
@@ -43,10 +36,8 @@ public class EcomApp {
      * This method is the entry point of our application
      *
      * @param args Unused
-     * @throws InvalidInputException       for user made error
-     * @throws ApplicationRuntimeException for application error
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InvalidInputException, ApplicationRuntimeException {
         initializeResources();
         logger = Logger.getLogger(EcomApp.class.getName());
         boolean temp = true;
@@ -76,6 +67,13 @@ public class EcomApp {
                 case 4:
                     logger.info("Shopping Ended");
                     temp = false;
+
+                    try {
+                        con.close();
+                    } catch(SQLException e) {
+                        throw new ApplicationRuntimeException(500,"Connection is not closed",e);
+                    }
+
                     break;
                 default:
                     continue;

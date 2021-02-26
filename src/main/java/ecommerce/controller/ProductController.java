@@ -23,10 +23,8 @@ public class ProductController {
      * This method is used when we to add product to database
      *
      * @param con connection
-     * @throws InvalidInputException       for throwing user error
-     * @throws ApplicationRuntimeException for throwing application error
      */
-    public void add(Connection con)  {
+    public void add(Connection con) throws InvalidInputException, ApplicationRuntimeException {
         logger.info("Enter product name: ");
         String prodName = sc.next();
 
@@ -44,38 +42,25 @@ public class ProductController {
         int qt = sc.nextInt();
 
         Product obj = new Product(prodName, sell_price, description, type, qt);
-        try {
-            productService.addNewProduct(obj, con);
-        } catch (InvalidInputException e) {
-            logger.info("Error Code: " + e.getErroCode() +"|"+ "Error Description: " + e.getErrorDesc());
 
-        } catch (ApplicationRuntimeException e) {
-            logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
-        }
+        productService.addNewProduct(obj, con);
+
     }
 
     /**
      * This method is used when we to update product information in database
      *
      * @param con connection
-     * @throws InvalidInputException       for throwing user error
-     * @throws ApplicationRuntimeException for throwing application error
      */
-    public void update(Connection con)  {
+    public void update(Connection con) throws InvalidInputException, ApplicationRuntimeException {
         logger.info("Enter product name: ");
         String prodName = sc.next();
 
         logger.info("Enter quantity: ");
         int qt = sc.nextInt();
 
-        try {
-            productService.updateProduct(qt, prodName, con);
-        } catch (InvalidInputException e) {
-            logger.info("Error Code: " + e.getErroCode() +"|"+ "Error Description: " + e.getErrorDesc());
 
-        } catch (ApplicationRuntimeException e) {
-            logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
-        }
+        productService.updateProduct(qt, prodName, con);
 
 
     }
@@ -84,23 +69,14 @@ public class ProductController {
      * This method is used when we to delete  product in database
      *
      * @param con connection
-     * @throws InvalidInputException       for throwing user error
-     * @throws ApplicationRuntimeException for throwing application error
      */
-    public void delete(Connection con)  {
+    public void delete(Connection con) throws InvalidInputException, ApplicationRuntimeException {
         logger.info("Enter product name: ");
         String prodName = sc.next();
 
 
-        try {
-            productService.checkProdName(prodName);
-            productService.deleteProduct(prodName, con);
-        }catch (InvalidInputException e) {
-            logger.info("Error Code: " + e.getErroCode() +"|"+ "Error Description: " + e.getErrorDesc());
-
-        } catch (ApplicationRuntimeException e) {
-            logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
-        }
+        productService.checkProdName(prodName);
+        productService.deleteProduct(prodName, con);
 
 
     }
@@ -109,8 +85,6 @@ public class ProductController {
      * This method is used for providing interface
      *
      * @param con connection
-     * @throws InvalidInputException       for throwing user error
-     * @throws ApplicationRuntimeException for throwing application error
      */
     public void admin(Connection con) {
 
@@ -122,19 +96,26 @@ public class ProductController {
 
 
         int n = sc.nextInt();
-        switch (n) {
-            case 1:
-                add(con);
-                break;
-            case 2:
-                update(con);
-                break;
-            case 3:
-                delete(con);
-                break;
-            case 4:
-                break;
+        try {
+            switch (n) {
+                case 1:
+                    add(con);
+                    break;
+                case 2:
+                    update(con);
+                    break;
+                case 3:
+                    delete(con);
+                    break;
+                case 4:
+                    break;
 
+            }
+        } catch (InvalidInputException e) {
+            logger.info("Error Code: " + e.getErroCode() + "|" + "Error Description: " + e.getErrorDesc());
+
+        } catch (ApplicationRuntimeException e) {
+            logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
         }
     }
 }
