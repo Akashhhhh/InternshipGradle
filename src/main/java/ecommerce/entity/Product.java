@@ -1,12 +1,22 @@
 package ecommerce.entity;
+import ecommerce.annotation.InvalidNameAnnotation;
+
 import java.util.UUID;
 
 public class Product  {
     UUID prodId =UUID.randomUUID();
+
+    @InvalidNameAnnotation
     private String prodName;
+
     private float sellPrice;
+
+    @InvalidNameAnnotation
     private String description;
+
+    @InvalidNameAnnotation
     private String type;
+
     private int quantity;
 
     public Product( String prodName, float sellPrice, String description, String type, int quantity ){

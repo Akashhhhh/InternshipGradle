@@ -1,6 +1,7 @@
 package ecommerce.entity;
 
 import ecommerce.annotation.InvalidNameAnnotation;
+import ecommerce.annotation.NotNullAnnotation;
 
 import java.util.UUID;
 
@@ -14,8 +15,14 @@ public class Customer {
     private String lName;
 
     private String mobileNo;
+
+    @NotNullAnnotation
     private String emailId;
+
+    @NotNullAnnotation
     private String address;
+
+    @NotNullAnnotation
     private String dateOfBirth;
     private String timeCreated; // when user creates its account
     private String timeLastUpdated; // when user updates it account

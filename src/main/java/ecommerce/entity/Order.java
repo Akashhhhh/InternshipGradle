@@ -1,13 +1,19 @@
 package ecommerce.entity;
 
+import ecommerce.annotation.InvalidNameAnnotation;
+
 import java.util.UUID;
 
 public class Order {
     UUID orderId=UUID.randomUUID();
     UUID custId;
+
+    @InvalidNameAnnotation
     private String orderName;
+
     private String timeOrder; // time when order is placed
     private float totalPrice;
+
     private String quantity; // list of units of every product
     private String productIds;
     public Order(UUID custId,float totalPrice, String quantity, String productIds){

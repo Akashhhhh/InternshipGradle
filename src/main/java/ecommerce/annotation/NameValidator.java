@@ -13,7 +13,6 @@ public class NameValidator implements
     @Override
     public boolean isValid(String name, ConstraintValidatorContext cxt) {
 
-        System.out.println("tertfgdfgdfgdfg");
         return name != null && name.matches("^[a-zA-Z]*$");
     }
 
