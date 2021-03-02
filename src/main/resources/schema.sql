@@ -25,7 +25,7 @@ create table orders(
 create table product(
    prod_id uuid primary key,-- product id
    prod_name varchar(100) , -- product name
-   sell_price float ,-- selling price of the product
+   sell_price int ,-- selling price of the product
    description varchar(100), --short description about the product
    type varchar (100) ,
    quantity int -- total units available

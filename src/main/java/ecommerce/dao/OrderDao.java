@@ -44,7 +44,7 @@ public class OrderDao {
             while (resultSet.next()) {
                 UUID prod_id = (UUID) resultSet.getObject(1);
                 String prod_name = resultSet.getString(2);
-                Float sell_price = resultSet.getFloat(3);
+                int sell_price = resultSet.getInt(3);
                 String description = resultSet.getString(4);
                 String type = resultSet.getString(5);
                 int quantity = resultSet.getInt(6);

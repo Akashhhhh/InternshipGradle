@@ -18,4 +18,7 @@ public class InvalidInputException extends Exception {
     public String getErrorDesc() {
         return errorDesc;
     }
+    public void logError() {
+        System.out.println(erroCode + " " + errorDesc);
+    }
 }

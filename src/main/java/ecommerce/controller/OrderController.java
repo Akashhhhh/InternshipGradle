@@ -7,10 +7,18 @@ import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
 import ecommerce.service.OrderService;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.ValidatorFactory;
 import java.sql.Connection;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -19,20 +27,20 @@ import java.util.logging.Logger;
  *
  * @author Akash gupta
  */
+@RequestMapping("/user")
+@RestController
 public class OrderController {
-    Scanner sc = new Scanner(System.in);
-    private static Logger logger = java.util.logging.Logger.getLogger(OrderController.class.getName());
+
     OrderDao orderDao = new OrderDao();
     OrderService orderService = new OrderService();
+    java.sql.Connection con = ecommerce.util.Connection.create();
 
-    /**
-     * This class is used for placing orders
-     *
-     * @param custId customer id
-     * @param name   name of product
-     * @param con    connection
-     */
-    public void placeOrder(UUID custId, String name, Connection con) throws ApplicationRuntimeException {
+    @PostMapping("/addProduct")
+    public void placeOrder(UUID custId, String name, Connection con) throws ApplicationRuntimeException, InvalidInputException {
+
+        UUID cust_id = null;
+
+        cust_id = orderService.CheckEmailId(email, lru, con);
         Map<UUID, Product> menu = null;
 
         menu = orderService.getMenu(con);
@@ -65,6 +73,10 @@ public class OrderController {
 
         }
         Order od = new Order(custId, totalPrice, quantities, prodIds);
+        Set<ConstraintViolation<Order>> constraintViolations = validator.validate(od);
+        if(constraintViolations.size() > 0) {
+            throw new InvalidInputException(400, constraintViolations.iterator().next().getMessage());
+        }
         orderService.addOrder(od,custId,name,con);
 
 
@@ -76,10 +88,18 @@ public class OrderController {
      * @param name name of product
      * @param con  connection
      */
-    public void deleteOrder(String name, Connection con) throws ApplicationRuntimeException, InvalidInputException {
+    @DeleteMapping("/deleteOrder")
+    public String deleteOrder(String name, Connection con) {
 
-        orderService.deleteOrder(name, con);
-
+        try {
+            orderService.deleteOrder(name, con);
+            return "Order Deleted";
+        } catch (ApplicationRuntimeException e) {
+           e.logError();
+        } catch (InvalidInputException e) {
+            e.logError();
+        }
+       return "Order is not deleted";
     }
 
     /**
@@ -94,61 +114,7 @@ public class OrderController {
 
     }
 
-    /**
-     * This class provide an interface
-     *
-     * @param lru cache
-     * @param con connection
-     */
-    public void order(LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        logger.info("Enter your email id: ");
-        String email = sc.next();
-        UUID cust_id = null;
-
-        cust_id = orderService.CheckEmailId(email, lru, con);
 
 
-        boolean temp = true;
-        while (temp) {
-            logger.info("\n" + "1.Place a new Order " + "\n" + "2.Delete an Exiting order" + "\n" +
-                    "3.Show orders" + "\n" +
-                    "4.Exit");
-            int n = sc.nextInt();
-
-
-            try {
-                switch (n) {
-
-                    case 1:
-                        logger.info("Provide a name to your orders: " + "\n");
-                        String name1 = sc.next();
-                        placeOrder(cust_id, name1, con);
-                        break;
-                    case 2:
-                        logger.info("Enter the name of your order: " + "\n");
-                        String name2 = sc.next();
-                        deleteOrder(name2, con);
-                        break;
-                    case 3:
-                        logger.info("Enter the name of your order: " + "\n");
-                        String name3 = sc.next();
-                        showOrder(name3, con);
-                        break;
-                    case 4:
-                        temp = false;
-                        break;
-
-
-                }
-            } catch (InvalidInputException e) {
-                logger.info("Error Code: " + e.getErroCode() + "|" + "Error Description: " + e.getErrorDesc());
-
-            } catch (ApplicationRuntimeException e) {
-                logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
-            }
-        }
-
-
-    }
 }
 

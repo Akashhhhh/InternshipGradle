@@ -1,4 +1,6 @@
 plugins {
+    id 'org.springframework.boot' version '2.4.3'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
 }
 
@@ -16,11 +18,12 @@ dependencies {
     compile group: 'javax.validation', name: 'validation-api', version: '2.0.0.Final'
 
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
-
-    implementation group: 'org.hibernate', name: 'hibernate-validator', version: '4.3.2.Final'
-
-
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation group: 'org.hibernate', name: 'hibernate-validator', version: '6.0.13.Final'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '1.2.3.RELEASE'
 }
+
 
 test {
     useJUnitPlatform()

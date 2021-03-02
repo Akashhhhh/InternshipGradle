@@ -41,7 +41,7 @@ public class CustomerService {
      * @throws InvalidInputException       for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public void addNewCustomer(Customer obj, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+    public void addNewCustomer(Customer obj,LruCacheService lru ,Connection con) throws InvalidInputException, ApplicationRuntimeException {
         validator.validateCustomer(obj);
 
         customerDao.insertCustomerToDb(obj, con);

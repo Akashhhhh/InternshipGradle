@@ -30,7 +30,7 @@ public class ProductDao {
             PreparedStatement pstmt = con.prepareStatement(q);
             pstmt.setObject(1, obj.getProdId());
             pstmt.setString(2, obj.getProdName());
-            pstmt.setFloat(3, obj.getSellPrice());
+            pstmt.setInt(3, obj.getSellPrice());
             pstmt.setString(4, obj.getDescription());
             pstmt.setString(5, obj.getType());
             pstmt.setInt(6, obj.getQuantity());

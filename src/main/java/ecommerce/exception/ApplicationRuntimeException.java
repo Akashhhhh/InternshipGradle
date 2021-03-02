@@ -20,4 +20,7 @@ public class ApplicationRuntimeException extends Exception {
     public String getErrorDesc() {
         return errorDesc;
     }
+    public void logError() {
+        System.out.println(errorCode + " " + errorDesc);
+    }
 }

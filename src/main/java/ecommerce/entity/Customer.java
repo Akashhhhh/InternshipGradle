@@ -1,33 +1,34 @@
 package ecommerce.entity;
 
-import ecommerce.annotation.InvalidNameAnnotation;
-import ecommerce.annotation.NotNullAnnotation;
-
 import java.util.UUID;
 
 public class Customer {
     UUID custId =UUID.randomUUID(); // customer id
 
-    @InvalidNameAnnotation
+   // @InvalidNameAnnotation
     private String fName;
 
-    @InvalidNameAnnotation
+    //@InvalidNameAnnotation
     private String lName;
 
     private String mobileNo;
 
-    @NotNullAnnotation
+   // @NotNullAnnotation
     private String emailId;
 
-    @NotNullAnnotation
+   // @NotNullAnnotation
     private String address;
 
-    @NotNullAnnotation
+
+
+    //@NotNullAnnotation
     private String dateOfBirth;
     private String timeCreated; // when user creates its account
     private String timeLastUpdated; // when user updates it account
 
+    public Customer(){
 
+    }
     public Customer(String fName, String lName, String mobileNo, String emailId, String address, String dateOfBirth){
         this.fName = fName;
         this.lName = lName;
@@ -70,5 +71,8 @@ public class Customer {
 
     public String getTimeLastUpdated() {
         return timeLastUpdated;
+    }
+    public void setCustId(UUID custId) {
+        this.custId = custId;
     }
 }

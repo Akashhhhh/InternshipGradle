@@ -13,7 +13,7 @@ public class NullValidator implements
     @Override
     public boolean isValid(String s, ConstraintValidatorContext cxt) {
 
-        return s== null;
+        return s!= null;
     }
 
 }
