@@ -1,12 +1,12 @@
 package ecommerce.controller;
 
 import ecommerce.cache.LruCacheService;
-import ecommerce.dao.OrderDao;
 import ecommerce.entity.Order;
 import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
 import ecommerce.service.OrderService;
+import ecommerce.service.ProductService;
 
 import java.sql.Connection;
 import java.util.Map;
@@ -22,9 +22,8 @@ import java.util.logging.Logger;
 public class OrderController {
     Scanner sc = new Scanner(System.in);
     private static Logger logger = java.util.logging.Logger.getLogger(OrderController.class.getName());
-    OrderDao orderDao = new OrderDao();
     OrderService orderService = new OrderService();
-
+    ProductService productService = new ProductService();
     /**
      * This class is used for placing orders
      *
@@ -34,9 +33,7 @@ public class OrderController {
      */
     public void placeOrder(UUID custId, String name, Connection con) throws ApplicationRuntimeException {
         Map<UUID, Product> menu = null;
-
-        menu = orderService.getMenu(con);
-
+        menu = productService.getMenu(con);
         float totalPrice = 0;
         String prodIds = "";
         String quantities = "";
@@ -65,7 +62,7 @@ public class OrderController {
 
         }
         Order od = new Order(custId, totalPrice, quantities, prodIds);
-        orderService.addOrder(od,custId,name,con);
+        orderService.addOrder(od, custId, name, con);
 
 
     }
@@ -89,8 +86,8 @@ public class OrderController {
      * @param con  connection
      */
     public void showOrder(String name, Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        Order order=null;
-        orderService.showOrder(name, con,order);
+        Order order = null;
+        orderService.showOrder(name, con, order);
 
     }
 
@@ -100,12 +97,19 @@ public class OrderController {
      * @param lru cache
      * @param con connection
      */
-    public void order(LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+    public void order(LruCacheService lru, Connection con) {
         logger.info("Enter your email id: ");
         String email = sc.next();
         UUID cust_id = null;
 
-        cust_id = orderService.CheckEmailId(email, lru, con);
+        try {
+            cust_id = orderService.CheckEmailId(email, lru, con);
+        } catch (InvalidInputException e) {
+            logger.info("Error Code: " + e.getErroCode() + "|" + "Error Description: " + e.getErrorDesc());
+
+        } catch (ApplicationRuntimeException e) {
+            logger.info("Error Code: " + e.getErrorCode() + "|" + "Error Description: " + e.getErrorDesc());
+        }
 
 
         boolean temp = true;

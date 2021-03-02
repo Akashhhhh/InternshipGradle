@@ -4,11 +4,8 @@ import ecommerce.cache.LruCacheService;
 import ecommerce.controller.CustomerController;
 import ecommerce.controller.OrderController;
 import ecommerce.controller.ProductController;
-import ecommerce.exception.ApplicationRuntimeException;
-import ecommerce.exception.InvalidInputException;
 import ecommerce.util.Connection;
 
-import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -37,7 +34,7 @@ public class EcomApp {
      *
      * @param args Unused
      */
-    public static void main(String[] args) throws InvalidInputException, ApplicationRuntimeException {
+    public static void main(String[] args)  {
         initializeResources();
         logger = Logger.getLogger(EcomApp.class.getName());
         boolean temp = true;
@@ -67,13 +64,6 @@ public class EcomApp {
                 case 4:
                     logger.info("Shopping Ended");
                     temp = false;
-
-                    try {
-                        con.close();
-                    } catch(SQLException e) {
-                        throw new ApplicationRuntimeException(500,"Connection is not closed",e);
-                    }
-
                     break;
                 default:
                     continue;

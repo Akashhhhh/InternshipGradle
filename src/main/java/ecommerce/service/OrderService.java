@@ -4,12 +4,10 @@ import ecommerce.cache.LruCacheService;
 import ecommerce.controller.OrderController;
 import ecommerce.dao.OrderDao;
 import ecommerce.entity.Order;
-import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
 
 import java.sql.Connection;
-import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -24,12 +22,13 @@ public class OrderService {
     OrderDao orderDao;
     Validator validator;
 
-    public OrderService(OrderDao orderDao, Validator validator){
-        this.orderDao= orderDao;
+    public OrderService(OrderDao orderDao, Validator validator) {
+        this.orderDao = orderDao;
         this.validator = validator;
 
     }
-    public OrderService(){
+
+    public OrderService() {
         orderDao = new OrderDao();
         validator = new Validator();
 
@@ -43,10 +42,11 @@ public class OrderService {
      * @throws InvalidInputException       for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
+
     public void deleteOrder(String name, Connection con) throws ApplicationRuntimeException, InvalidInputException {
-        if (validator.validateString(name)) {
-            orderDao.deleteOrderToDb(name, con);
-        } else throw new InvalidInputException(400, "Check the name");
+        validator.validateString(name);
+
+        orderDao.deleteOrderToDb(name, con);
     }
 
     /**
@@ -60,39 +60,36 @@ public class OrderService {
      * @throws ApplicationRuntimeException for throwing application error
      */
     public UUID CheckEmailId(String email, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        if (validator.validateEmailId(email)) {
-            UUID cust_id = null;
-            if (lru.find(email)) {
-                cust_id = lru.get(email);
-                logger.info("Customer id is retrieve from cache");
-            } else {
-                cust_id = orderDao.getCustomerId(email, con);
+        validator.validateEmailId(email);
 
-            }
-            return cust_id;
-        } else throw new InvalidInputException(400, "Check the email");
+        UUID cust_id = null;
+        if (lru.find(email)) {
+            cust_id = lru.get(email);
+            logger.info("Customer id is retrieve from cache");
+        } else {
+            cust_id = orderDao.getCustomerId(email, con);
+
+        }
+        return cust_id;
+
     }
 
     /**
      * This method is used for validating when order is shown
      *
-     * @param name name of customer
-     * @param con  connection
+     * @param name  name of customer
+     * @param con   connection
      * @param order
      * @throws InvalidInputException for throwing user error
      */
     public void showOrder(String name, Connection con, Order order) throws InvalidInputException, ApplicationRuntimeException {
-        if (validator.validateString(name)) {
-            orderDao.showOrderToDb(name,con,order);
-        } else throw new InvalidInputException(400, "Check the name");
-    }
+        validator.validateString(name);
 
-    public Map<UUID, Product> getMenu(Connection con) throws ApplicationRuntimeException {
-        Map<UUID, Product> menu=orderDao.menu(con);
-        return menu;
-    }
+        orderDao.showOrderToDb(name, con, order);
 
+    }
     public void addOrder(Order od, UUID custId, String name, Connection con) throws ApplicationRuntimeException {
         orderDao.addOrderToDb(od, custId, name, con);
     }
+
 }

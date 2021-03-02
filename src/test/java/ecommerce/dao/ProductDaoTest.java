@@ -53,4 +53,16 @@ public class ProductDaoTest {
         productDao.updateProductToDb(12,"Aventus",con);
 
     }
+
+    @Test
+    public void testGetMenu() throws SQLException, ApplicationRuntimeException {
+
+        when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true).thenReturn(false);
+
+
+        productDao.getMenu(con);
+
+    }
 }

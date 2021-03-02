@@ -56,7 +56,7 @@ public class CustomerDao {
      * @param con   connection
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public void deleteCustomerToDb(String email, Connection con) throws ApplicationRuntimeException {
+    public boolean deleteCustomerToDb(String email, Connection con) throws ApplicationRuntimeException {
         try {
             String q = "delete from customer where email_id=?";
             PreparedStatement pstmt = con.prepareStatement(q);
@@ -66,7 +66,7 @@ public class CustomerDao {
             throw new ApplicationRuntimeException(500, "Customer is not deleted in database", e);
         }
 
-
+      return true;
     }
 
     /**
@@ -76,7 +76,7 @@ public class CustomerDao {
      * @param address addres that is updated
      * @param con     connection
      */
-    public void updateCustomerToDb(String email, String address, Connection con) throws ApplicationRuntimeException {
+    public boolean updateCustomerToDb(String email, String address, Connection con) throws ApplicationRuntimeException {
         try {
             String q = "update customer set address=? where email_id=?";
             PreparedStatement pstmt = con.prepareStatement(q);
@@ -89,7 +89,7 @@ public class CustomerDao {
 
         }
 
-
+      return true;
     }
 
     /**

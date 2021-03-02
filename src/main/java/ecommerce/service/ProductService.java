@@ -6,6 +6,8 @@ import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
 
 import java.sql.Connection;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * This class is used for validating the inputs
@@ -15,6 +17,7 @@ public class ProductService {
 
     static ProductDao productDao ;
     Validator validator ;
+    OrderService orderService = new OrderService();
     public ProductService(ProductDao productDao, Validator validator){
         this.productDao = productDao;
         this.validator = validator;
@@ -48,12 +51,8 @@ public class ProductService {
      * @throws ApplicationRuntimeException for throwing application error
      */
     public void updateProduct(int qt, String prodName, Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        if (!validator.validateString(prodName)) {
-            throw new InvalidInputException(400, "Check the prodName");
-        }
-        if (qt <= 0) {
-            throw new InvalidInputException(400, "Quantity should be at least 1");
-        }
+        validator.validateString(prodName);
+        validator.validateQt(qt);
         productDao.updateProductToDb(qt, prodName, con);
     }
 
@@ -65,16 +64,16 @@ public class ProductService {
      * @throws ApplicationRuntimeException for throwing application error
      */
     public  void deleteProduct(String name, Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        if (!validator.validateString(name)) {
-            throw new InvalidInputException(400, "Check the name");
-
-        }
+        validator.validateString(name);
         productDao.deleteProductToDb(name,con);
     }
     public  void checkProdName(String prodName)throws InvalidInputException{
-        if(!validator.validateString(prodName)){
-            throw new InvalidInputException(400, "Check the product name");
-        }
+        validator.validateString(prodName);
     }
+
+    public Map<UUID, Product> getMenu(Connection con) throws ApplicationRuntimeException {
+        return  productDao.getMenu(con);
+    }
+
 
 }

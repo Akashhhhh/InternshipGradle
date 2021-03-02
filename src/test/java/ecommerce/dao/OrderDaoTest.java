@@ -40,22 +40,7 @@ public class OrderDaoTest {
 
         orderDao = new OrderDao(logger);
     }
-    @Test
-    public void testMenu() throws SQLException, ApplicationRuntimeException {
-        when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
 
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-
-        when(resultSet.getObject(1)).thenReturn(UUID.randomUUID());
-        when(resultSet.getString(2)).thenReturn("Aventus");
-        when(resultSet.getFloat(3)).thenReturn(12F);
-        when(resultSet.getString(4)).thenReturn("perfume");
-        when(resultSet.getString(5)).thenReturn("EDP");
-        when(resultSet.getInt(6)).thenReturn(12);
-
-        orderDao.menu(con);
-
-    }
     @Test
     public void testGetCustomerId() throws SQLException, ApplicationRuntimeException {
         when(con.prepareStatement(anyString())).thenReturn(preparedStatement);

@@ -3,6 +3,10 @@ package ecommerce.service;
 import ecommerce.entity.*;
 import ecommerce.exception.*;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.ValidatorFactory;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,22 +16,28 @@ import java.util.regex.Pattern;
  * @author Akash Gupta
  */
 public class Validator {
+    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    javax.validation.Validator validator = factory.getValidator();
+
     /**
      * This method is used for validating the email id
      *
      * @param email email id
      * @return returns true or false
      */
-    public static boolean validateEmailId(String email) {
+    public void validateEmailId(String email) throws InvalidInputException {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\." +
                 "[a-zA-Z0-9_+&*-]+)*@" +
                 "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
                 "A-Z]{2,7}$";
 
         Pattern pat = Pattern.compile(emailRegex);
-        if (email == null)
-            return false;
-        return pat.matcher(email).matches();
+
+        if (email == null || pat.matcher(email).matches() == false)
+            throw new InvalidInputException(400, "Check email id");
+
+        //return pat.matcher(email).matches();
+
     }
 
     /**
@@ -36,10 +46,9 @@ public class Validator {
      * @param s any string
      * @return return true or false
      */
-    public static boolean validateString(String s) {
-        if ((!s.equals(null)) && s.matches("^[a-zA-Z]*$"))
-            return true;
-        return false;
+    public void validateString(String s) throws InvalidInputException {
+        if (!s.matches("^[a-zA-Z]*$"))
+            throw new InvalidInputException(400, "Check ");
 
     }
 
@@ -49,11 +58,14 @@ public class Validator {
      * @param d date
      * @return return true or false
      */
-    public static boolean validateDate(String d) {
+    public void validateDate(String d) throws InvalidInputException {
         String regex = "([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher((CharSequence) d);
-        return matcher.matches();
+        if (matcher.matches() == false) {
+            throw new InvalidInputException(400, "Check");
+        }
+        // return matcher.matches();
     }
 
     /**
@@ -62,76 +74,88 @@ public class Validator {
      * @param s mobile number
      * @return returns true or false
      */
-    public static boolean validateMobile(String s) {
+    public void validateMobile(String s) throws InvalidInputException {
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) >= '0' && s.charAt(i) <= '9') {
 
-            } else return false;
+            } else throw new InvalidInputException(400, "Check ");
         }
-        if (s.length() == 10)
-            return true;
-        return false;
+        if (s.length() != 10)
+            throw new InvalidInputException(400, "Check");
+        //return true;
+    }
+
+    public void validateQt(int n) throws InvalidInputException {
+        if (n <= 0) {
+            throw new InvalidInputException(400, "Check the quantity");
+        }
+        //  return true;
     }
 
     /**
      * @param obj
      * @throws InvalidInputException
      */
-    public  boolean validateCustomer(Customer obj) throws InvalidInputException {
+    public void validateCustomer(Customer obj) throws InvalidInputException {
+
+        Set<ConstraintViolation<Customer>> constraintViolations = validator.validate(obj);
+        if (constraintViolations.size() > 0) {
+            throw new InvalidInputException(400, constraintViolations.iterator().next().getMessage());
+        }
         String fName = obj.getfName();
         String lName = obj.getlName();
         String emailId = obj.getEmailId();
         String dateOfBirth = obj.getDateOfBirth();
         String mobileNo = obj.getMobileNo();
-        if (!validateString(fName)) {
-            throw new InvalidInputException(400, "First name should contain only alphabets");
-        }
-        if (!validateString(lName)) {
-            throw new InvalidInputException(400, "Last name should contain only alphabets");
-        }
-        if (!validateEmailId(emailId)) {
-            throw new InvalidInputException(400, "Check email id");
-        }
-        if (!validateDate(dateOfBirth)) {
-            throw new InvalidInputException(400, "Check date of birth 'yyyy-mm-dd'");
-        }
-        if (!validateMobile(mobileNo)) {
-            throw new InvalidInputException(400, "Check Mobile number");
-        }
 
-      return true;
+        validateString(fName);
+
+        validateString(lName);
+
+        validateEmailId(emailId);
+        validateDate(dateOfBirth);
+
+        validateMobile(mobileNo);
+
+
     }
 
     /**
      * This method is used for validating the object of product class
+     *
      * @param obj object of product class
      * @throws InvalidInputException for throwing user error
      */
-    public boolean  validateProduct(Product obj) throws InvalidInputException {
+    public void validateProduct(Product obj) throws InvalidInputException {
+        Set<ConstraintViolation<Product>> constraintViolations = validator.validate(obj);
+        if (constraintViolations.size() > 0) {
+            throw new InvalidInputException(400, constraintViolations.iterator().next().getMessage());
+        }
         String name = obj.getProdName();
         String desc = obj.getDescription();
         String type = obj.getType();
         int qt = obj.getQuantity();
 
-        if (!validateString(name)) {
-            throw new InvalidInputException(400, "name should contain only alphabets");
-        }
-        if (!validateString(desc)) {
-            throw new InvalidInputException(400, "Description should contain only alphabets");
-        }
+        validateString(name);
+        validateString(desc);
 
         if (qt <= 0) {
             throw new InvalidInputException(400, "Quantity should be atleast 1 ");
         }
-        return true;
+
     }
 
     /**
      * This method is used for validating object of order class
+     *
      * @param obj object of order class
      * @throws InvalidInputException for throwing user error
      */
-    public boolean validateOrder(Order obj) throws InvalidInputException {
+    public void validateOrder(Order obj) throws InvalidInputException {
+        Set<ConstraintViolation<Order>> constraintViolations = validator.validate(obj);
+        if (constraintViolations.size() > 0) {
+            throw new InvalidInputException(400, constraintViolations.iterator().next().getMessage());
+        }
         String qt = obj.getQuantity();
         String prodIds = obj.getProductIds();
         int flag = 0;
@@ -149,7 +173,7 @@ public class Validator {
 
 
         for (int i = 0; i < prodIds.length(); i++) {
-            if (prodIds.charAt(i) >= '1' && prodIds.charAt(i) <= '9' ||prodIds.charAt(i) == ',') {
+            if (prodIds.charAt(i) >= '1' && prodIds.charAt(i) <= '9' || prodIds.charAt(i) == ',') {
 
             } else
                 flag = 1;
@@ -159,6 +183,6 @@ public class Validator {
         if (flag == 1) {
             throw new InvalidInputException(400, "name should contain only alphabets");
         }
-      return true;
+
     }
 }

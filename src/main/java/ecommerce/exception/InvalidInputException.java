@@ -11,6 +11,7 @@ public class InvalidInputException extends Exception {
 
     }
 
+
     public int getErroCode() {
         return erroCode;
     }

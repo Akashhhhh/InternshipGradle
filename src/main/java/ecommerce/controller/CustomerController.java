@@ -6,12 +6,8 @@ import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
 import ecommerce.service.CustomerService;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
 import java.sql.Connection;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -24,8 +20,7 @@ public class CustomerController {
     private static Logger logger = java.util.logging.Logger.getLogger(CustomerController.class.getName());
     CustomerService customerService = new CustomerService();
 
-    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    javax.validation.Validator validator = factory.getValidator();
+
 
     /**
      * This method is used for adding custoner to database
@@ -55,10 +50,7 @@ public class CustomerController {
 
         Customer obj = new Customer(fName, lName, mob, email, address, dob);
 
-            Set<ConstraintViolation<Customer>> constraintViolations = validator.validate(obj);
-            if(constraintViolations.size() > 0) {
-                throw new InvalidInputException(400, constraintViolations.iterator().next().getMessage());
-            }
+
 
 
             customerService.addNewCustomer(obj, lru, con);

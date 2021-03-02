@@ -4,9 +4,10 @@ import ecommerce.entity.Order;
 import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
 
-import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -25,38 +26,6 @@ public class OrderDao {
     public OrderDao(Logger logger) {
         this.logger = java.util.logging.Logger.getLogger(CustomerDao.class.getName());
 
-    }
-    /**
-     * This method is used for creating query while placing order
-     *
-     * @param con connection
-     * @return it returns the map of product
-     * @throws ApplicationRuntimeException for throwing application error
-     */
-    public  Map<UUID, Product> menu(Connection con) throws ApplicationRuntimeException {
-        boolean f = false;
-        Map<UUID, Product> v = new HashMap<UUID, Product>();
-
-        try {
-            String q = "select * from product";
-            Statement stmt = con.prepareStatement(q);
-            ResultSet resultSet = stmt.executeQuery(q);
-            while (resultSet.next()) {
-                UUID prod_id = (UUID) resultSet.getObject(1);
-                String prod_name = resultSet.getString(2);
-                Float sell_price = resultSet.getFloat(3);
-                String description = resultSet.getString(4);
-                String type = resultSet.getString(5);
-                int quantity = resultSet.getInt(6);
-                Product product = new Product(prod_name, sell_price, description, type, quantity);
-                v.put(prod_id, product);
-            }
-
-        } catch (SQLException e) {
-            throw new ApplicationRuntimeException(500,"Menu is not displayed",e);
-
-        }
-        return v;
     }
 
     /**

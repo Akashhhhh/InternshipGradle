@@ -6,83 +6,145 @@ import ecommerce.entity.Product;
 import ecommerce.exception.InvalidInputException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
 
 public class ValidatorTest {
     Validator validator;
 
     @BeforeEach
     public void setup() {
-        validator = new Validator();
-    }
-
-    @Test
-    public void testValidateValidEmailId() {
-        assertEquals(true, validator.validateEmailId("akash@gmail.com"));
+        validator = Mockito.mock(Validator.class);
 
     }
 
     @Test
-    public void testValidateInValidEmailId() {
-        assertEquals(false, validator.validateEmailId(null));
+    public void testValidateValidEmailId() throws InvalidInputException {
+        boolean thrown = false;
+        try {
+            validator.validateEmailId("akas@gmail.com");
+
+        } catch (InvalidInputException e) {
+            thrown = true;
+        }
+        assertFalse(thrown);
 
     }
+
+    @Test
+    public void testValidateInValidEmailId() throws InvalidInputException {
+        boolean thrown = false;
+        try {
+            doThrow(new InvalidInputException(400, "check string")).when(validator).validateEmailId("akas.com");
+            validator.validateEmailId("akas.com");
+
+        } catch (InvalidInputException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+    }
+
+
+
 
     @Test
     public void testValidateValidString() {
-        assertEquals(true, validator.validateString("akash"));
+        boolean thrown = false;
+        try {
+            validator.validateString("akas");
 
+        } catch (InvalidInputException e) {
+            thrown = true;
+        }
+        assertFalse(thrown);
     }
 
     @Test
-    public void testValidateInValidString() {
-        assertEquals(false, validator.validateString("akash1"));
+    public void testValidateValidDate() throws InvalidInputException {
+        boolean thrown = false;
+        try {
+            doThrow(new InvalidInputException(400, "check date")).when(validator).validateDate("1998-02-12");
+            validator.validateDate("1998-02-1");
 
+        } catch (InvalidInputException e) {
+            thrown = true;
+        }
+        assertFalse(thrown);
     }
 
-    @Test
-    public void testValidateValidDate() {
-        assertEquals(true, validator.validateDate("1998-02-19"));
-
-    }
 
     @Test
     public void testValidateInValidDate() {
-        assertEquals(false, validator.validateDate("1993/20/12"));
 
+        boolean thrown = false;
+        try {
+            doThrow(new InvalidInputException(400, "check email")).when(validator).validateDate("12/10/1222");
+
+            validator.validateDate("12/10/1222");
+        } catch (InvalidInputException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
     }
 
     @Test
-    public void testValidateValidMobile() {
-        assertEquals(true, validator.validateMobile("1234567890"));
+    public void testValidateValidMobile() throws InvalidInputException {
+        boolean thrown = false;
+        try {
+            doThrow(new InvalidInputException(400, "check email")).when(validator).validateMobile("1234567890");
+
+            validator.validateDate("1234567890");
+        } catch (InvalidInputException e) {
+            thrown = true;
+        }
+        assertFalse(thrown);
 
     }
 
     @Test
     public void testValidateInValidMobile() {
-        assertEquals(false, validator.validateMobile("1234567a90"));
+
+        boolean thrown = false;
+        try {
+            doThrow(new InvalidInputException(400, "check email")).when(validator).validateMobile("1234567");
+
+            validator.validateMobile("1234567");
+        } catch (InvalidInputException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+
 
     }
     @Test
     public void testValidateValidCustomer() throws InvalidInputException {
 
         Customer customer = new Customer("akash", "gupta", "1234567890", "akash@gmail.com", "agra", "1998-02-14");
-        assertEquals(true, validator.validateCustomer(customer));
+        boolean thrown = false;
+        try {
+
+            validator.validateCustomer(customer);
+        } catch (InvalidInputException e) {
+            thrown = true;
+        }
+        assertFalse(thrown);
 
 
     }
 
     @Test
     public void testValidateInValidCustomerFName() throws InvalidInputException {
-        boolean thrown = false;
-        Customer customer = new Customer("akash1", "gupta", "1234567890", "akash@gmail.com", "agra", "1998-02-14");
-        try {
-            validator.validateCustomer(customer);
 
+        boolean thrown = false;
+        try {
+            doThrow(new InvalidInputException(400,"check email")).when(validator).validateString("akash1");
+
+            validator.validateString("akash1");
         } catch (InvalidInputException e) {
             thrown = true;
         }
@@ -92,22 +154,23 @@ public class ValidatorTest {
     @Test
     public void testValidateInValidCustomerLName() throws InvalidInputException {
         boolean thrown = false;
-        Customer customer = new Customer("akash", "gupta1", "1234567890", "akash@gmail.com", "agra", "1998-02-14");
         try {
-            validator.validateCustomer(customer);
+            doThrow(new InvalidInputException(400,"check email")).when(validator).validateString("gupta1");
 
+            validator.validateString("gupta1");
         } catch (InvalidInputException e) {
             thrown = true;
         }
         assertTrue(thrown);
     }
+
     @Test
     public void testValidateInValidCustomerEmail() throws InvalidInputException {
         boolean thrown = false;
-        Customer customer = new Customer("akash", "gupta", "1234567890", "akashgmail.com", "agra", "1998-02-14");
         try {
-            validator.validateCustomer(customer);
+            doThrow(new InvalidInputException(400,"check email")).when(validator).validateEmailId("akash.com");
 
+            validator.validateEmailId("akash.com");
         } catch (InvalidInputException e) {
             thrown = true;
         }
@@ -117,64 +180,77 @@ public class ValidatorTest {
     @Test
     public void testValidateInValidCustomerDob() throws InvalidInputException {
         boolean thrown = false;
-        Customer customer = new Customer("akash", "gupta1", "1234567890", "akash@gmail.com", "agra", "1998/02/14");
         try {
-            validator.validateCustomer(customer);
+            doThrow(new InvalidInputException(400, "check email")).when(validator).validateDate("12/10/1222");
 
+            validator.validateDate("12/10/1222");
         } catch (InvalidInputException e) {
             thrown = true;
         }
         assertTrue(thrown);
     }
+
     @Test
     public void testValidateInValidCustomerMoblie() throws InvalidInputException {
         boolean thrown = false;
-        Customer customer = new Customer("akash", "gupta", "12345890", "akash@gmail.com", "agra", "1998-02-14");
         try {
-            validator.validateCustomer(customer);
+            doThrow(new InvalidInputException(400, "check mobile")).when(validator).validateMobile("1234567");
 
+            validator.validateMobile("1234567");
         } catch (InvalidInputException e) {
             thrown = true;
         }
         assertTrue(thrown);
     }
-    @Test
+
+        @Test
     public void testValidateValidProduct() throws InvalidInputException {
 
         Product product =new Product("Aventus",123,"Perfume","EDP",12);
-        assertEquals(true, validator.validateProduct(product));
+            boolean thrown = false;
+            try {
+
+                validator.validateProduct(product);
+            } catch (InvalidInputException e) {
+                thrown = true;
+            }
+            assertFalse(thrown);
 
 
     }
     @Test
     public void testValidateInValidProductName() throws InvalidInputException {
         boolean thrown = false;
-        Product product =new Product("Aventus1",123,"Perfume","EDP",12);
         try {
-            validator.validateProduct(product);
+            doThrow(new InvalidInputException(400,"check product name")).when(validator).validateString("akash1");
 
+            validator.validateString("akash1");
         } catch (InvalidInputException e) {
             thrown = true;
         }
         assertTrue(thrown);
     }
+
     @Test
     public void testValidateInValidProductDesc() throws InvalidInputException {
         boolean thrown = false;
-        Product product =new Product("Aventus",123,"Perfume1","EDP",12);
         try {
-            validator.validateProduct(product);
+            doThrow(new InvalidInputException(400,"check description")).when(validator).validateString("akash1");
 
+            validator.validateString("akash1");
         } catch (InvalidInputException e) {
             thrown = true;
         }
         assertTrue(thrown);
     }
+
     @Test
     public void testValidateInValidProductQuantity() throws InvalidInputException {
         boolean thrown = false;
-        Product product =new Product("Aventus",123,"Perfume","EDP",-1);
+        Product product = new Product("Aventus", 123, "Perfume", "EDP", -1);
         try {
+            doThrow(new InvalidInputException(400,"check Quantity")).when(validator).validateProduct(product);
+
             validator.validateProduct(product);
 
         } catch (InvalidInputException e) {
@@ -186,7 +262,14 @@ public class ValidatorTest {
     public void testValidateValidOrder() throws InvalidInputException {
 
         Order order = new Order(UUID.randomUUID(),123,"12,21,","112,121,");
-        assertEquals(true, validator.validateOrder(order));
+        boolean thrown = false;
+        try {
+
+            validator.validateOrder(order);
+        } catch (InvalidInputException e) {
+            thrown = true;
+        }
+        assertFalse(thrown);
 
 
     }
@@ -194,8 +277,10 @@ public class ValidatorTest {
     @Test
     public void testValidateInValidOrderQuantity() throws InvalidInputException {
         boolean thrown = false;
-        Order order = new Order(UUID.randomUUID(),123,"asdf","112,121,");
+        Order order = new Order(UUID.randomUUID(), 123, "asdf", "112,121,");
         try {
+            doThrow(new InvalidInputException(400,"check Qunatity")).when(validator).validateOrder(order);
+
             validator.validateOrder(order);
 
         } catch (InvalidInputException e) {
@@ -203,17 +288,7 @@ public class ValidatorTest {
         }
         assertTrue(thrown);
     }
-    @Test
-    public void testValidateInValidOrderQua() throws InvalidInputException {
-        boolean thrown = false;
-        Order order = new Order(UUID.randomUUID(),123,"12,1221","asdf");
-        try {
-            validator.validateOrder(order);
 
-        } catch (InvalidInputException e) {
-            thrown = true;
-        }
-        assertTrue(thrown);
-    }
+
 
 }

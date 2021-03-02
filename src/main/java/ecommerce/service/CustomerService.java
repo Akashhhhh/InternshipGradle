@@ -62,16 +62,15 @@ public class CustomerService {
      * @throws ApplicationRuntimeException for throwing application error
      */
     public void updateCustomer(String email, String address, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        if (!validator.validateEmailId(email)) {
-            throw new InvalidInputException(400, "Check the email id");
-        }
+        validator.validateEmailId(email);
+
         customerDao.updateCustomerToDb(email, address, con);
 
         // lru
         if (!lru.find(email)) {
             UUID custId = customerDao.getCustIdtByEmailId(email, con);
             lru.put(email, custId);
-            logger.info("Customer info updated in cache");
+            //logger.info("Customer info updated in cache");
         }
 
 
@@ -87,10 +86,8 @@ public class CustomerService {
      * @throws ApplicationRuntimeException for throwing application error
      */
     public void deleteCustomer(String email, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        if (!validator.validateEmailId(email)) {
-            throw new InvalidInputException(400, "Check the inputs");
+        validator.validateEmailId(email);
 
-        }
         customerDao.deleteCustomerToDb(email, con);
         if (lru.find(email)) {
             lru.delete(email);
