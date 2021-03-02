@@ -1,14 +1,13 @@
 package ecommerce.entity;
 
 import ecommerce.annotation.InvalidNameAnnotation;
-import ecommerce.annotation.NotNullAnnotation;
 
 import java.util.UUID;
 
 public class Customer {
     UUID custId =UUID.randomUUID(); // customer id
 
-    @InvalidNameAnnotation
+
     private String fName;
 
     @InvalidNameAnnotation
@@ -16,13 +15,13 @@ public class Customer {
 
     private String mobileNo;
 
-    @NotNullAnnotation
+
     private String emailId;
 
-    @NotNullAnnotation
+    @InvalidNameAnnotation
     private String address;
 
-    @NotNullAnnotation
+
     private String dateOfBirth;
     private String timeCreated; // when user creates its account
     private String timeLastUpdated; // when user updates it account

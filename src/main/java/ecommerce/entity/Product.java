@@ -1,4 +1,5 @@
 package ecommerce.entity;
+
 import ecommerce.annotation.InvalidNameAnnotation;
 
 import java.util.UUID;
@@ -6,12 +7,12 @@ import java.util.UUID;
 public class Product  {
     UUID prodId =UUID.randomUUID();
 
-    @InvalidNameAnnotation
+   @InvalidNameAnnotation
     private String prodName;
 
     private float sellPrice;
 
-    @InvalidNameAnnotation
+
     private String description;
 
     @InvalidNameAnnotation

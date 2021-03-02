@@ -18,17 +18,18 @@ import java.util.logging.Logger;
 public class CustomerService {
     private static Logger logger;
     CustomerDao customerDao;
-    Validator validator ;
+    Validator validator;
 
-    public CustomerService(CustomerDao customerDao,Validator validator,Logger logger){
-      this.customerDao = customerDao;
-      this.validator = validator;
-      this.logger = logger;
+    public CustomerService(CustomerDao customerDao, Validator validator, Logger logger) {
+        this.customerDao = customerDao;
+        this.validator = validator;
+        this.logger = logger;
     }
-    public CustomerService(){
+
+    public CustomerService() {
         customerDao = new CustomerDao();
         validator = new Validator();
-        logger=java.util.logging.Logger.getLogger(CustomerService.class.getName());
+        logger = java.util.logging.Logger.getLogger(CustomerService.class.getName());
     }
 
 

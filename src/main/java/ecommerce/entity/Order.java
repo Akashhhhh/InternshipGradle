@@ -1,18 +1,14 @@
 package ecommerce.entity;
 
-import ecommerce.annotation.InvalidNameAnnotation;
-import ecommerce.annotation.NotNullAnnotation;
-
 import java.util.UUID;
 
 public class Order {
     UUID orderId=UUID.randomUUID();
     UUID custId;
 
-    @InvalidNameAnnotation
     private String orderName;
 
-    @NotNullAnnotation
+
     private String timeOrder; // time when order is placed
     private float totalPrice;
 

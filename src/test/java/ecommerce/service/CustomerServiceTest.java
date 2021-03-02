@@ -95,9 +95,9 @@ public class CustomerServiceTest {
 
         boolean thrown = false;
         try {
-            doThrow(new InvalidInputException(400,"check email")).when(validator).validateEmailId("akasj.com");
+            doThrow(new InvalidInputException(400,"check email")).when(validator).validateEmailId("akasj");
 
-            customerService.deleteCustomer("akashgmail.com", lru, con);
+            customerService.deleteCustomer("akasj", lru, con);
         } catch (InvalidInputException e) {
             thrown = true;
         }

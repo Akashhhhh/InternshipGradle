@@ -122,9 +122,9 @@ public class ProductServiceTest {
     public void testCheckProdNameWithInValidName() throws InvalidInputException {
         boolean thrown = false;
         try {
-            doThrow(new InvalidInputException(400,"check product name")).when(validator).validateString("kawasaki1");
+            doThrow(new InvalidInputException(400,"check product name")).when(validator).validateString("123");
 
-            productService.checkProdName("Kawasaki1");
+            productService.checkProdName("123");
         } catch (InvalidInputException e) {
             thrown = true;
         }

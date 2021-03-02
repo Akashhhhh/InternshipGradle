@@ -29,7 +29,7 @@ public class CustomerDao {
      * @param con connection
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public boolean insertCustomerToDb(Customer obj, Connection con) throws ApplicationRuntimeException {
+    public void insertCustomerToDb(Customer obj, Connection con) throws ApplicationRuntimeException {
 
         try {
             String q = "insert into customer(cust_id,f_name,l_name,mobile_no,email_id,address,date_of_birth,date_created,date_last_modified) values(?,?,?,?,?,?,?,current_timestamp,current_timestamp)";
@@ -46,7 +46,7 @@ public class CustomerDao {
         } catch (SQLException e) {
             throw new ApplicationRuntimeException(500, "Customer is not inserted to database", e);
         }
-      return true;
+      //return true;
     }
 
     /**
@@ -107,8 +107,7 @@ public class CustomerDao {
             PreparedStatement pstmt = con.prepareStatement(q);
             pstmt.setString(1, email);
             ResultSet set = pstmt.executeQuery();
-            while (set.next()) {
-                id = (UUID) set.getObject(1);
+            while (set.next()) { id = (UUID) set.getObject(1);
             }
         } catch (SQLException e) {
             throw new ApplicationRuntimeException(500, "Customer Id is not fetched", e);

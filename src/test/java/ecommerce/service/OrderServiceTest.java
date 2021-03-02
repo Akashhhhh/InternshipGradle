@@ -106,9 +106,9 @@ public class OrderServiceTest {
     public void testCheckEmailIdWithException() throws ApplicationRuntimeException, InvalidInputException {
         boolean thrown = false;
         try {
-            doThrow(new InvalidInputException(400,"check product name")).when(validator).validateString("akaah.com");
+            doThrow(new InvalidInputException(400,"check product name")).when(validator).validateEmailId("akaah");
 
-            orderService.CheckEmailId("akaah.com", lru, con);
+            orderService.CheckEmailId("akaah", lru, con);
         } catch (InvalidInputException e) {
             thrown = true;
         }

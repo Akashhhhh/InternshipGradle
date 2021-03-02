@@ -73,8 +73,8 @@ public class CustomerController {
         String address = sc.next();
 
 
-            customerService.updateCustomer(email, address, lru, con);
-            logger.info("Customer information updated successfully in database");
+        customerService.updateCustomer(email, address, lru, con);
+        logger.info("Customer information updated successfully in database");
 
 
     }

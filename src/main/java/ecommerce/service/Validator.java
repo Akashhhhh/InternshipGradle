@@ -76,20 +76,18 @@ public class Validator {
      */
     public void validateMobile(String s) throws InvalidInputException {
         for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) >= '0' && s.charAt(i) <= '9') {
-
-            } else throw new InvalidInputException(400, "Check ");
+            if (s.charAt(i) >= '0' && s.charAt(i) <= '9') { }
+            else throw new InvalidInputException(400, "Check ");
         }
         if (s.length() != 10)
             throw new InvalidInputException(400, "Check");
-        //return true;
-    }
 
+    }
     public void validateQt(int n) throws InvalidInputException {
         if (n <= 0) {
             throw new InvalidInputException(400, "Check the quantity");
         }
-        //  return true;
+
     }
 
     /**
@@ -107,17 +105,11 @@ public class Validator {
         String emailId = obj.getEmailId();
         String dateOfBirth = obj.getDateOfBirth();
         String mobileNo = obj.getMobileNo();
-
         validateString(fName);
-
         validateString(lName);
-
         validateEmailId(emailId);
         validateDate(dateOfBirth);
-
         validateMobile(mobileNo);
-
-
     }
 
     /**
@@ -135,7 +127,6 @@ public class Validator {
         String desc = obj.getDescription();
         String type = obj.getType();
         int qt = obj.getQuantity();
-
         validateString(name);
         validateString(desc);
 
@@ -160,26 +151,25 @@ public class Validator {
         String prodIds = obj.getProductIds();
         int flag = 0;
         for (int i = 0; i < qt.length(); i++) {
-            if (qt.charAt(i) >= '1' && qt.charAt(i) <= '9' || qt.charAt(i) == ',') {
-
-            } else
+            if (qt.charAt(i) >= '0' && qt.charAt(i) <= '9') {
+                flag = 0;
+            } else {
                 flag = 1;
-            break;
-
-
+                break;
+            }
         }
         if (flag == 1)
             throw new InvalidInputException(400, "name should contain only alphabets");
 
-
         for (int i = 0; i < prodIds.length(); i++) {
-            if (prodIds.charAt(i) >= '1' && prodIds.charAt(i) <= '9' || prodIds.charAt(i) == ',') {
-
-            } else
+            if (prodIds.charAt(i) >= '0' && prodIds.charAt(i) <= '9') {
+                flag = 0;
+            } else {
                 flag = 1;
-            break;
-        }
+                break;
+            }
 
+        }
         if (flag == 1) {
             throw new InvalidInputException(400, "name should contain only alphabets");
         }
