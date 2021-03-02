@@ -137,11 +137,6 @@ public class ProductServiceTest {
         when(productDao.getMenu(con)).thenReturn(m);
         productService.getMenu(con);
     }
-    @Test
-    public void testGetCustomerId() throws InvalidInputException, ApplicationRuntimeException {
 
-        when(productDao.getCustomerId("akash@gmail.com",con)).thenReturn(UUID.randomUUID());
-        productService.getCustomerIdentity("akash@gmail.com",con);
-    }
 
 }

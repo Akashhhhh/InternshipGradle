@@ -96,6 +96,9 @@ public class CustomerService {
         }
 
     }
+    public UUID getCustomerIdentity(String email, Connection con) throws ApplicationRuntimeException {
+        return customerDao.getCustomerId(email,con);
+    }
 
 }
 

@@ -114,4 +114,20 @@ public class CustomerDao {
         }
         return id;
     }
+    public  UUID getCustomerId(String email, Connection con) throws ApplicationRuntimeException {
+        UUID id = null;
+        try {
+            String q = "select cust_id from customer where email_id=?";
+            PreparedStatement pstmt = con.prepareStatement(q);
+            pstmt.setString(1, email);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                id = (UUID) rs.getObject(1);
+            }
+        } catch (SQLException e) {
+            throw new ApplicationRuntimeException(500,"Customer Id is not fetched",e);
+
+        }
+        return id;
+    }
 }

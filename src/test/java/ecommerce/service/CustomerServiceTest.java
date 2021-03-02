@@ -67,14 +67,14 @@ public class CustomerServiceTest {
     public void testUpdateCustomerWithInValidEmail() throws ApplicationRuntimeException, InvalidInputException {
         boolean thrown = false;
         try {
-            doThrow(new InvalidInputException(400,"check email")).when(validator).validateEmailId("akasj.com");
+            doThrow(new InvalidInputException(400, "check email")).when(validator).validateEmailId("akasj.com");
             customerService.updateCustomer("akash.com", "agra", lru, con);
 
-        }catch (InvalidInputException e){
-              thrown = true;
+        } catch (InvalidInputException e) {
+            thrown = true;
         }
 
-       assertTrue(true);
+        assertTrue(true);
 
 
     }
@@ -95,7 +95,7 @@ public class CustomerServiceTest {
 
         boolean thrown = false;
         try {
-            doThrow(new InvalidInputException(400,"check email")).when(validator).validateEmailId("akasj");
+            doThrow(new InvalidInputException(400, "check email")).when(validator).validateEmailId("akasj");
 
             customerService.deleteCustomer("akasj", lru, con);
         } catch (InvalidInputException e) {
@@ -104,4 +104,12 @@ public class CustomerServiceTest {
         assertTrue(thrown);
 
     }
+    @Test
+    public void testGetCustomerIdentity() throws ApplicationRuntimeException {
+
+        when(customerDao.getCustomerId("akash@gmail.com",con)).thenReturn(UUID.randomUUID());
+        customerService.getCustomerIdentity("akash@gmail.com",con);
+
+    }
+
 }

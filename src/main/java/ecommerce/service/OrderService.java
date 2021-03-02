@@ -21,7 +21,7 @@ public class OrderService {
     private static Logger logger = java.util.logging.Logger.getLogger(OrderController.class.getName());
     OrderDao orderDao;
     Validator validator;
-    ProductService productService;
+    CustomerService customerService;
     public OrderService(OrderDao orderDao, Validator validator) {
         this.orderDao = orderDao;
         this.validator = validator;
@@ -31,7 +31,7 @@ public class OrderService {
     public OrderService() {
         orderDao = new OrderDao();
         validator = new Validator();
-        productService = new ProductService();
+       customerService = new CustomerService();
     }
 
     /**
@@ -67,7 +67,7 @@ public class OrderService {
             cust_id = lru.get(email);
             logger.info("Customer id is retrieve from cache");
         } else {
-            cust_id = productService.getCustomerIdentity(email,con);
+            cust_id = customerService.getCustomerIdentity(email,con);
 
 
         }

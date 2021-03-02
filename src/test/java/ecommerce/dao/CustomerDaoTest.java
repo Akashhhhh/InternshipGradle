@@ -66,4 +66,12 @@ public class CustomerDaoTest {
         customerDao.getCustIdtByEmailId("akash@gamail.com", con);
     }
 
+    @Test
+    public void testGetCustomerId() throws SQLException, ApplicationRuntimeException {
+
+        when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        customerDao.getCustomerId("akash@gamail.com", con);
+    }
+
 }
