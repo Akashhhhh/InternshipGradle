@@ -65,4 +65,15 @@ public class ProductDaoTest {
         productDao.getMenu(con);
 
     }
+    @Test
+    public void testGetCustomerId() throws SQLException, ApplicationRuntimeException {
+
+        when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true).thenReturn(false);
+
+
+        productDao.getCustomerId("akash@gmail.com",con);
+
+    }
 }

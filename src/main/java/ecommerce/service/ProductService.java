@@ -74,6 +74,9 @@ public class ProductService {
     public Map<UUID, Product> getMenu(Connection con) throws ApplicationRuntimeException {
         return  productDao.getMenu(con);
     }
+    public UUID getCustomerIdentity(String email, Connection con) throws ApplicationRuntimeException {
+        return productDao.getCustomerId(email,con);
+    }
 
 
 }

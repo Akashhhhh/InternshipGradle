@@ -41,14 +41,7 @@ public class OrderDaoTest {
         orderDao = new OrderDao(logger);
     }
 
-    @Test
-    public void testGetCustomerId() throws SQLException, ApplicationRuntimeException {
-        when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.getObject(1)).thenReturn(UUID.randomUUID());
-        orderDao.getCustomerId("akash@gmail.com",con);
 
-    }
     @Test
     public void testAddOrderToDatabase() throws SQLException, ApplicationRuntimeException {
         when(con.prepareStatement(anyString())).thenReturn(preparedStatement);

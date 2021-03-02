@@ -6,7 +6,6 @@ import ecommerce.exception.ApplicationRuntimeException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -28,30 +27,8 @@ public class OrderDao {
 
     }
 
-    /**
-     * This method is used for fetching customer id
-     *
-     * @param email email of the customer
-     * @param con   connection
-     * @return it returns the customer id
-     * @throws ApplicationRuntimeException for throwing application error
-     */
-    public  UUID getCustomerId(String email, Connection con) throws ApplicationRuntimeException {
-        UUID id = null;
-        try {
-            String q = "select cust_id from customer where email_id=?";
-            PreparedStatement pstmt = con.prepareStatement(q);
-            pstmt.setString(1, email);
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                id = (UUID) rs.getObject(1);
-            }
-        } catch (SQLException e) {
-            throw new ApplicationRuntimeException(500,"Customer Id is not fetched",e);
 
-        }
-        return id;
-    }
+
 
     /**
      * This method is used for creating query while adding order to database
