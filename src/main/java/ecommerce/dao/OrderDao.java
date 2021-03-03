@@ -81,7 +81,7 @@ public class OrderDao {
     public boolean showOrderToDb(String name,Connection con,Order order) throws ApplicationRuntimeException {
         boolean f = false;
         try {
-            String q = "insert into order(order_id,cust_id,order_name,order_time,total_price,quantity,product_ids) values(?,?,?,current_timestamp,?,?,?)";
+            String q = "insert into orders(order_id,cust_id,order_name,order_time,total_price,quantity,product_ids) values(?,?,?,current_timestamp,?,?,?)";
             PreparedStatement pstmt = con.prepareStatement(q);
             pstmt.setObject(1, order.getOrderId());
             pstmt.setObject(2, order.getCustId());

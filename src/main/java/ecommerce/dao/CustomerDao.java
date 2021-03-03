@@ -64,7 +64,6 @@ public class CustomerDao {
         } catch (SQLException e) {
             throw new ApplicationRuntimeException(500, "Customer is not deleted in database", e);
         }
-
     }
 
     /**
@@ -81,13 +80,9 @@ public class CustomerDao {
             pstmt.setString(1, address);
             pstmt.setString(2, email);
             pstmt.executeUpdate();
-
         } catch (SQLException e) {
             throw new ApplicationRuntimeException(500, "Customer is not updated in database", e);
-
         }
-
-
     }
 
     /**
@@ -126,7 +121,6 @@ public class CustomerDao {
             }
         } catch (SQLException e) {
             throw new ApplicationRuntimeException(500, "Customer Id is not fetched", e);
-
         }
         return id;
     }

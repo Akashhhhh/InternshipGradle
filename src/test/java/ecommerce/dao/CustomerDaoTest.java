@@ -80,7 +80,6 @@ public class CustomerDaoTest {
         try {
             when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
             when(preparedStatement.executeQuery()).thenThrow(new SQLException());
-            ;
             when(resultSet.getObject(1)).thenReturn(UUID.randomUUID());
             customerDao.getCustIdtByEmailId("akash@gamail.com", con);
         } catch (ApplicationRuntimeException e) {

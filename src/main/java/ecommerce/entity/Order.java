@@ -1,11 +1,14 @@
 package ecommerce.entity;
 
+import ecommerce.annotation.NotNullAnnotation;
+
 import java.util.UUID;
 
 public class Order {
     UUID orderId=UUID.randomUUID();
     UUID custId;
 
+    @NotNullAnnotation
     private String orderName;
 
 

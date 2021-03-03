@@ -36,7 +36,7 @@ public class ProductDaoTest {
     public void testInsertProductToDb() throws SQLException, ApplicationRuntimeException {
         try{
             when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
-            when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+            when(preparedStatement.executeUpdate()).thenThrow(new SQLException());
             productDao.insertProductToDb(product,con);
         }catch (ApplicationRuntimeException e){
             assertEquals("Product is not added",e.getErrorDesc());
@@ -47,7 +47,7 @@ public class ProductDaoTest {
     public void testDeleteProductToDb() throws SQLException, ApplicationRuntimeException {
        try{
            when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
-           when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+           when(preparedStatement.executeUpdate()).thenThrow(new SQLException());
            productDao.deleteProductToDb("Aventus",con);
        }catch (ApplicationRuntimeException e){
            assertEquals("Product is not deleted",e.getErrorDesc());
@@ -58,7 +58,7 @@ public class ProductDaoTest {
     public void testUpdateProductToDb() throws SQLException, ApplicationRuntimeException {
        try{
            when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
-           when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+           when(preparedStatement.executeUpdate()).thenThrow(new SQLException());
            productDao.updateProductToDb(12,"Aventus",con);
        }catch (ApplicationRuntimeException e){
            assertEquals("Product is not updated",e.getErrorDesc());
@@ -72,8 +72,7 @@ public class ProductDaoTest {
        try{
            when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
            when(preparedStatement.executeQuery()).thenReturn(resultSet);
-           when(preparedStatement.executeUpdate()).thenThrow(new SQLException());
-
+           when(preparedStatement.executeQuery()).thenThrow(new SQLException());
            productDao.getMenu(con);
        }catch (ApplicationRuntimeException e){
            assertEquals("Menu is not displayed",e.getErrorDesc());

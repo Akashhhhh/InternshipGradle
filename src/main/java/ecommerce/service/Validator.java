@@ -48,7 +48,7 @@ public class Validator {
      */
     public void validateString(String s) throws InvalidInputException {
         if (!s.matches("^[a-zA-Z]*$"))
-            throw new InvalidInputException(400, "Check ");
+            throw new InvalidInputException(400, "check name");
 
     }
 
@@ -63,9 +63,9 @@ public class Validator {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher((CharSequence) d);
         if (matcher.matches() == false) {
-            throw new InvalidInputException(400, "Check");
+            throw new InvalidInputException(400, "Check date");
         }
-        // return matcher.matches();
+
     }
 
     /**
@@ -77,17 +77,16 @@ public class Validator {
     public void validateMobile(String s) throws InvalidInputException {
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) >= '0' && s.charAt(i) <= '9') { }
-            else throw new InvalidInputException(400, "Check ");
+            else throw new InvalidInputException(400, "Check mobile");
         }
         if (s.length() != 10)
-            throw new InvalidInputException(400, "Check");
+            throw new InvalidInputException(400, "Check mobile");
 
     }
     public void validateQt(int n) throws InvalidInputException {
         if (n <= 0) {
             throw new InvalidInputException(400, "Check the quantity");
         }
-
     }
 
     /**
@@ -131,7 +130,7 @@ public class Validator {
         validateString(desc);
 
         if (qt <= 0) {
-            throw new InvalidInputException(400, "Quantity should be atleast 1 ");
+            throw new InvalidInputException(400, "Quantity should be atleast 1");
         }
 
     }

@@ -56,12 +56,9 @@ public class ProductDao {
             PreparedStatement pstmt = con.prepareStatement(q);
             pstmt.setString(1, name);
             pstmt.executeUpdate();
-
         } catch (SQLException e) {
             throw new ApplicationRuntimeException(500, "Product is not deleted", e.getCause());
         }
-
-
     }
 
     /**
