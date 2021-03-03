@@ -2,7 +2,7 @@ package ecommerce.dao;
 
 import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -11,20 +11,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 public class ProductDaoTest {
-    static Connection con;
-    static Product product;
-    static PreparedStatement preparedStatement;
-    static ResultSet resultSet;
-    static ProductDao productDao;
+     Connection con;
+     Product product;
+     PreparedStatement preparedStatement;
+     ResultSet resultSet;
+     ProductDao productDao;
     public static Logger logger;
 
-    @BeforeAll
-    public static void setup() {
+    @BeforeEach
+    public  void setup() {
         con = Mockito.mock(Connection.class);
         product = new Product("Aventus",23,"perfume","EDP",34);
         preparedStatement = Mockito.mock(PreparedStatement.class);
@@ -34,32 +34,51 @@ public class ProductDaoTest {
     }
     @Test
     public void testInsertProductToDb() throws SQLException, ApplicationRuntimeException {
-        when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        productDao.insertProductToDb(product,con);
+        try{
+            when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
+            when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+            productDao.insertProductToDb(product,con);
+        }catch (ApplicationRuntimeException e){
+            assertEquals("Product is not added",e.getErrorDesc());
+        }
 
     }
     @Test
     public void testDeleteProductToDb() throws SQLException, ApplicationRuntimeException {
-        when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        productDao.deleteProductToDb("Aventus",con);
+       try{
+           when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
+           when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+           productDao.deleteProductToDb("Aventus",con);
+       }catch (ApplicationRuntimeException e){
+           assertEquals("Product is not deleted",e.getErrorDesc());
+       }
 
     }
     @Test
     public void testUpdateProductToDb() throws SQLException, ApplicationRuntimeException {
-        when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        productDao.updateProductToDb(12,"Aventus",con);
+       try{
+           when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
+           when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+           productDao.updateProductToDb(12,"Aventus",con);
+       }catch (ApplicationRuntimeException e){
+           assertEquals("Product is not updated",e.getErrorDesc());
+       }
 
     }
 
     @Test
     public void testGetMenu() throws SQLException, ApplicationRuntimeException {
 
-        when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true).thenReturn(false);
+       try{
+           when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
+           when(preparedStatement.executeQuery()).thenReturn(resultSet);
+           when(preparedStatement.executeUpdate()).thenThrow(new SQLException());
+
+           productDao.getMenu(con);
+       }catch (ApplicationRuntimeException e){
+           assertEquals("Menu is not displayed",e.getErrorDesc());
+
+       }
 
 
         productDao.getMenu(con);

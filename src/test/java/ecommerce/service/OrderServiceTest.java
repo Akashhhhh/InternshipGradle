@@ -6,7 +6,7 @@ import ecommerce.entity.Order;
 import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -14,21 +14,21 @@ import java.sql.Connection;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class OrderServiceTest {
-    public static Connection con;
-    public static Order order;
-    public static LruCacheService lru;
-    public static OrderDao orderDao;
-    public static Validator validator;
-    public static Logger logger;
-    static OrderService orderService;
-    static Product product;
+    Connection con;
+    Order order;
+    LruCacheService lru;
+    OrderDao orderDao;
+    Validator validator;
+    Logger logger;
+    OrderService orderService;
+    Product product;
 
-    @BeforeAll
-    public static void setup() {
+    @BeforeEach
+    public void setup() {
         UUID uuid1 = UUID.randomUUID();
         UUID uuid2 = UUID.randomUUID();
         con = Mockito.mock(Connection.class);
@@ -57,14 +57,13 @@ public class OrderServiceTest {
     @Test
     public void testDeleteOrderWhenException() throws ApplicationRuntimeException, InvalidInputException {
 
-        boolean thrown = false;
+
         try {
-            doThrow(new InvalidInputException(400,"check product name")).when(validator).validateString("kawasaki1");
+            doThrow(new InvalidInputException(400, "check product name")).when(validator).validateString("kawasaki1");
             orderService.deleteOrder("kawasaki1", con);
         } catch (InvalidInputException e) {
-            thrown = true;
+            assertEquals("check product name", e.getErrorDesc());
         }
-        assertTrue(thrown);
 
 
     }
@@ -81,15 +80,13 @@ public class OrderServiceTest {
     @Test
     public void testShowOrderWithException() throws ApplicationRuntimeException, InvalidInputException {
 
-        boolean thrown = false;
         try {
-            doThrow(new InvalidInputException(400,"check product name")).when(validator).validateString("kawasaki1");
-
+            doThrow(new InvalidInputException(400, "check product name")).when(validator).validateString("kawasaki1");
             orderService.showOrder("kawasaki1", con, order);
         } catch (InvalidInputException e) {
-            thrown = true;
+            assertEquals("check product name", e.getErrorDesc());
         }
-        assertTrue(thrown);
+
     }
 
     @Test
@@ -104,15 +101,15 @@ public class OrderServiceTest {
 
     @Test
     public void testCheckEmailIdWithException() throws ApplicationRuntimeException, InvalidInputException {
-        boolean thrown = false;
-        try {
-            doThrow(new InvalidInputException(400,"check product name")).when(validator).validateEmailId("akaah");
 
+        try {
+            doThrow(new InvalidInputException(400, "check product name")).when(validator).validateEmailId("akaah");
             orderService.CheckEmailId("akaah", lru, con);
         } catch (InvalidInputException e) {
-            thrown = true;
+            assertEquals("check product name", e.getErrorDesc());
+
         }
-        assertTrue(thrown);
+
 
     }
 

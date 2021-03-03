@@ -5,7 +5,7 @@ import ecommerce.dao.CustomerDao;
 import ecommerce.entity.Customer;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -13,21 +13,23 @@ import java.sql.Connection;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+
+;
 
 public class CustomerServiceTest {
 
-    public static Connection con;
-    public static Customer customer;
-    public static LruCacheService lru;
-    public static CustomerDao customerDao;
-    public static Validator validator;
-    public static Logger logger;
+    Connection con;
+    Customer customer;
+    LruCacheService lru;
+    CustomerDao customerDao;
+    Validator validator;
+    Logger logger;
     static CustomerService customerService;
 
-    @BeforeAll
-    public static void setup() {
+    @BeforeEach
+    public void setup() {
         con = Mockito.mock(Connection.class);
         customer = new Customer("Akash", "Gupta", "1234567890", "akash@gmail.com", "Agra", "1998-02-18");
         lru = Mockito.mock(LruCacheService.class);
@@ -53,7 +55,7 @@ public class CustomerServiceTest {
         UUID custId = UUID.randomUUID();
         doNothing().when(validator).validateEmailId("akash@gmail.com");
         when(customerDao.getCustIdtByEmailId("akash@gmail.com", con)).thenReturn(custId);
-        when(customerDao.updateCustomerToDb("akash@gmail.com", "agra", con)).thenReturn(true);
+        doNothing().when(customerDao).updateCustomerToDb("akash@gmail.com", "agra", con);
 
         when(lru.find("akash@gmail.com")).thenReturn(true);
 
@@ -67,14 +69,13 @@ public class CustomerServiceTest {
     public void testUpdateCustomerWithInValidEmail() throws ApplicationRuntimeException, InvalidInputException {
         boolean thrown = false;
         try {
-            doThrow(new InvalidInputException(400, "check email")).when(validator).validateEmailId("akasj.com");
+
+            doThrow(new InvalidInputException(400, "check email")).when(validator).validateEmailId("akasj");
             customerService.updateCustomer("akash.com", "agra", lru, con);
 
         } catch (InvalidInputException e) {
-            thrown = true;
+            assertEquals("check email", e.getErrorDesc());
         }
-
-        assertTrue(true);
 
 
     }
@@ -99,16 +100,17 @@ public class CustomerServiceTest {
 
             customerService.deleteCustomer("akasj", lru, con);
         } catch (InvalidInputException e) {
-            thrown = true;
+            assertEquals("check email", e.getErrorDesc());
         }
-        assertTrue(thrown);
+
 
     }
+
     @Test
     public void testGetCustomerIdentity() throws ApplicationRuntimeException {
 
-        when(customerDao.getCustomerId("akash@gmail.com",con)).thenReturn(UUID.randomUUID());
-        customerService.getCustomerIdentity("akash@gmail.com",con);
+        when(customerDao.getCustomerId("akash@gmail.com", con)).thenReturn(UUID.randomUUID());
+        customerService.getCustomerIdentity("akash@gmail.com", con);
 
     }
 

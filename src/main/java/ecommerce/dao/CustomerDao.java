@@ -46,7 +46,6 @@ public class CustomerDao {
         } catch (SQLException e) {
             throw new ApplicationRuntimeException(500, "Customer is not inserted to database", e);
         }
-      //return true;
     }
 
     /**
@@ -56,7 +55,7 @@ public class CustomerDao {
      * @param con   connection
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public boolean deleteCustomerToDb(String email, Connection con) throws ApplicationRuntimeException {
+    public void deleteCustomerToDb(String email, Connection con) throws ApplicationRuntimeException {
         try {
             String q = "delete from customer where email_id=?";
             PreparedStatement pstmt = con.prepareStatement(q);
@@ -66,7 +65,6 @@ public class CustomerDao {
             throw new ApplicationRuntimeException(500, "Customer is not deleted in database", e);
         }
 
-      return true;
     }
 
     /**
@@ -76,7 +74,7 @@ public class CustomerDao {
      * @param address addres that is updated
      * @param con     connection
      */
-    public boolean updateCustomerToDb(String email, String address, Connection con) throws ApplicationRuntimeException {
+    public void updateCustomerToDb(String email, String address, Connection con) throws ApplicationRuntimeException {
         try {
             String q = "update customer set address=? where email_id=?";
             PreparedStatement pstmt = con.prepareStatement(q);
@@ -89,7 +87,7 @@ public class CustomerDao {
 
         }
 
-      return true;
+
     }
 
     /**
@@ -107,14 +105,16 @@ public class CustomerDao {
             PreparedStatement pstmt = con.prepareStatement(q);
             pstmt.setString(1, email);
             ResultSet set = pstmt.executeQuery();
-            while (set.next()) { id = (UUID) set.getObject(1);
+            while (set.next()) {
+                id = (UUID) set.getObject(1);
             }
         } catch (SQLException e) {
             throw new ApplicationRuntimeException(500, "Customer Id is not fetched", e);
         }
         return id;
     }
-    public  UUID getCustomerId(String email, Connection con) throws ApplicationRuntimeException {
+
+    public UUID getCustomerId(String email, Connection con) throws ApplicationRuntimeException {
         UUID id = null;
         try {
             String q = "select cust_id from customer where email_id=?";
@@ -125,7 +125,7 @@ public class CustomerDao {
                 id = (UUID) rs.getObject(1);
             }
         } catch (SQLException e) {
-            throw new ApplicationRuntimeException(500,"Customer Id is not fetched",e);
+            throw new ApplicationRuntimeException(500, "Customer Id is not fetched", e);
 
         }
         return id;

@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class ProductServiceTest {
@@ -66,28 +66,29 @@ public class ProductServiceTest {
 
     @Test
     public void testUpdateProductWithInValidName() throws InvalidInputException, ApplicationRuntimeException {
-        boolean thrown = false;
+
         try {
             doThrow(new InvalidInputException(400,"check product name")).when(validator).validateString("akash1");
             productService.updateProduct(2, "akash1", con);
         } catch (InvalidInputException e) {
-            thrown = true;
+            assertEquals("check product name",e.getErrorDesc());
         }
-        assertTrue(thrown);
+
 
     }
 
 
     @Test
     public void testUpdateProductQuantityLessTanOne() throws InvalidInputException, ApplicationRuntimeException {
-        boolean thrown = false;
+
         try {
             doThrow(new InvalidInputException(400,"check product quantity")).when(validator).validateQt(-1);
             productService.updateProduct(-1, "akash", con);
         } catch (InvalidInputException e) {
-            thrown = true;
+            assertEquals("check product quantity",e.getErrorDesc());
+
         }
-        assertTrue(thrown);
+
 
     }
 
@@ -100,15 +101,15 @@ public class ProductServiceTest {
 
     @Test
     public void testDeleteProductWithInValidName() throws InvalidInputException, ApplicationRuntimeException {
-        boolean thrown = false;
+
         try {
             doThrow(new InvalidInputException(400,"check product name")).when(validator).validateString("aventus1");
-
             productService.deleteProduct("aventus1", con);
         } catch (InvalidInputException e) {
-            thrown = true;
+            assertEquals("check product name",e.getErrorDesc());
+
         }
-        assertTrue(thrown);
+
 
     }
 
@@ -120,15 +121,15 @@ public class ProductServiceTest {
 
     @Test
     public void testCheckProdNameWithInValidName() throws InvalidInputException {
-        boolean thrown = false;
+
         try {
             doThrow(new InvalidInputException(400,"check product name")).when(validator).validateString("123");
-
             productService.checkProdName("123");
         } catch (InvalidInputException e) {
-            thrown = true;
+            assertEquals("check product name",e.getErrorDesc());
+
         }
-        assertTrue(thrown);
+
     }
 
     @Test

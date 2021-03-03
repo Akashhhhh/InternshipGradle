@@ -36,7 +36,7 @@ public class Validator {
         if (email == null || pat.matcher(email).matches() == false)
             throw new InvalidInputException(400, "Check email id");
 
-        //return pat.matcher(email).matches();
+
 
     }
 
