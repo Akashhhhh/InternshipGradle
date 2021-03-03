@@ -1,26 +1,17 @@
 package ecommerce.controller;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import ecommerce.cache.LruCacheService;
 import ecommerce.dao.OrderDao;
 import ecommerce.entity.Order;
-import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
 import ecommerce.service.OrderService;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
-import java.sql.Connection;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
+import javax.validation.Valid;
 import java.util.UUID;
-import java.util.logging.Logger;
+import java.util.Vector;
 
 /**
  * This class is used for managing place,delete and show order operation
@@ -35,85 +26,74 @@ public class OrderController {
     OrderService orderService = new OrderService();
     java.sql.Connection con = ecommerce.util.Connection.create();
 
-    @PostMapping("/addProduct")
-    public void placeOrder(UUID custId, String name, Connection con) throws ApplicationRuntimeException, InvalidInputException {
+    @PostMapping("/addOrder")
+    public String placeOrder(@Valid @RequestBody ObjectNode objectNode)  {
 
-        UUID cust_id = null;
 
-        cust_id = orderService.CheckEmailId(email, lru, con);
-        Map<UUID, Product> menu = null;
-
-        menu = orderService.getMenu(con);
-
-        float totalPrice = 0;
-        String prodIds = "";
-        String quantities = "";
-        for (Map.Entry<UUID, Product> entry : menu.entrySet()) {
-            Product p = entry.getValue();
-            String prodName = p.getProdName();
-            String desc = p.getDescription();
-            String type = p.getType();
-            float sell_price = p.getSellPrice();
-            int qt = p.getQuantity();
-            if (qt >= 1) {
-                logger.info("\n" + "Product name: " + prodName + "\n" +
-                        "Description: " + desc + "\n" +
-                        "Type:" + type + "\n" + "\n" +
-                        "Selling Price: " + sell_price + "\n"
-
-                );
-                logger.info("Do you want to buy: Y/N");
-                String c = sc.next();
-                if (c.equals("Y")) {
-                    totalPrice += sell_price;
-                    prodIds += p.getProdId() + ",";
-                    quantities += p.getQuantity() + ",";
-                }
-            }
-
+        LruCacheService lruCacheService = new LruCacheService();
+        String email = objectNode.get("emailId").asText();
+        UUID custId = null;
+        try {
+            custId = orderService.CheckEmailId(email, lruCacheService, con);
+        } catch (ApplicationRuntimeException e) {
+            e.logError();
+        } catch (InvalidInputException e) {
+            e.logError();
         }
+
+        float totalPrice = (float) objectNode.get("totalPrice").asDouble();
+        String quantities = objectNode.get("quantity").asText();
+        String prodIds = objectNode.get("productIds").asText();
+        String name = objectNode.get("name").asText();
+
         Order od = new Order(custId, totalPrice, quantities, prodIds);
-        Set<ConstraintViolation<Order>> constraintViolations = validator.validate(od);
-        if(constraintViolations.size() > 0) {
-            throw new InvalidInputException(400, constraintViolations.iterator().next().getMessage());
+        od.setOrderId(UUID.randomUUID());
+        try {
+            orderService.addOrder(od, custId, name, con);
+            return "Order placed";
+        } catch (ApplicationRuntimeException e) {
+            e.logError();
         }
-        orderService.addOrder(od,custId,name,con);
 
-
+        return "Order not placedddd";
     }
 
     /**
      * This class is used when order is deleted from database
-     *
-     * @param name name of product
-     * @param con  connection
      */
     @DeleteMapping("/deleteOrder")
-    public String deleteOrder(String name, Connection con) {
+    public String deleteOrder(@Valid @RequestBody ObjectNode objectNode) {
 
+        String name = objectNode.get("name").asText();
         try {
             orderService.deleteOrder(name, con);
             return "Order Deleted";
         } catch (ApplicationRuntimeException e) {
-           e.logError();
+            e.logError();
         } catch (InvalidInputException e) {
             e.logError();
         }
-       return "Order is not deleted";
+        return "Order is not deleted";
     }
 
     /**
      * This class is used for showing order
-     *
-     * @param name product name
-     * @param con  connection
      */
-    public void showOrder(String name, Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        Order order=null;
-        orderService.showOrder(name, con,order);
+    @GetMapping("/displayOrder")
+    public Vector<Vector> showOrder(@Valid @RequestBody ObjectNode objectNode) {
 
+        String name = objectNode.get("name").asText();
+        Vector<Vector>v = new Vector<>();
+        try {
+             v=orderService.showOrder(name, con);
+            return v;
+        } catch (ApplicationRuntimeException e) {
+            e.logError();
+        } catch (InvalidInputException e) {
+            e.logError();
+        }
+     return v;
     }
-
 
 
 }

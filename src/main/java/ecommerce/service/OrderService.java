@@ -11,6 +11,7 @@ import ecommerce.exception.InvalidInputException;
 import java.sql.Connection;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 /**
@@ -78,13 +79,16 @@ public class OrderService {
      *
      * @param name name of customer
      * @param con  connection
-     * @param order
      * @throws InvalidInputException for throwing user error
      */
-    public void showOrder(String name, Connection con, Order order) throws InvalidInputException, ApplicationRuntimeException {
+    public Vector<Vector> showOrder(String name, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        Vector<Vector>v;
         if (validator.validateString(name)) {
-            orderDao.showOrderToDb(name,con,order);
-        } else throw new InvalidInputException(400, "Check the name");
+            v=orderDao.showOrderToDb(name,con);
+        }
+        else throw new InvalidInputException(400, "Check the name");
+
+        return v;
     }
 
     public Map<UUID, Product> getMenu(Connection con) throws ApplicationRuntimeException {

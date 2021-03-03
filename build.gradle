@@ -12,16 +12,20 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.7.7'
-    compile group: 'javax.validation', name: 'validation-api', version: '2.0.0.Final'
-
+//    implementation group: 'org.hibernate', name: 'hibernate-validator', version: '4.3.2.Final'
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation group: 'org.hibernate', name: 'hibernate-validator', version: '6.0.13.Final'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '1.2.3.RELEASE'
+    testImplementation('org.springframework.boot:spring-boot-starter-test:2.2.2.RELEASE') {
+        exclude group: 'junit'
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.7.0'
+    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.7.0'
+    implementation('org.springframework.boot:spring-boot-starter-validation')
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.5.2')
+    testImplementation('org.junit.jupiter:junit-jupiter-engine:5.5.2')
+    testImplementation('org.junit.jupiter:junit-jupiter-params:5.5.2')
 }
 
 

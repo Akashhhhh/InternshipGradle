@@ -82,7 +82,7 @@ public class OrderDaoTest {
     public void testShowOrderToDatabase() throws SQLException, ApplicationRuntimeException {
         when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        orderDao.showOrderToDb("order",con,order);
+        orderDao.showOrderToDb("order",con);
 
     }
 }

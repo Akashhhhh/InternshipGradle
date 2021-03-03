@@ -1,14 +1,12 @@
 package ecommerce.entity;
 
-import ecommerce.annotation.InvalidNameAnnotation;
-
 import java.util.UUID;
 
 public class Order {
     UUID orderId=UUID.randomUUID();
     UUID custId;
 
-    @InvalidNameAnnotation
+   // @InvalidNameAnnotation
     private String orderName;
 
     private String timeOrder; // time when order is placed
@@ -45,5 +43,9 @@ public class Order {
 
     public String getProductIds() {
         return productIds;
+    }
+
+    public void setOrderId(UUID orderId) {
+        this.orderId = orderId;
     }
 }

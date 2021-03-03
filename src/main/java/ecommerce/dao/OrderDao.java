@@ -8,6 +8,7 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 /**
@@ -119,40 +120,56 @@ public class OrderDao {
      * @throws ApplicationRuntimeException for throwing application error
      */
     public  void deleteOrderToDb(String name, Connection con) throws ApplicationRuntimeException {
-        boolean f = false;
+
         try {
             String q = "delete from orders where order_name=?";
             PreparedStatement pstmt = con.prepareStatement(q);
             pstmt.setString(1, name);
             pstmt.executeUpdate();
-            f = true;
+
+
         } catch (SQLException e) {
             throw new ApplicationRuntimeException(500,"Order is not deleted in database",e);
 
         }
 
     }
-    public boolean showOrderToDb(String name,Connection con,Order order) throws ApplicationRuntimeException {
-        boolean f = false;
+    public Vector<Vector>showOrderToDb(String name,Connection con) throws ApplicationRuntimeException {
+        Vector<String >v1= new Vector<String >();
+        Vector<UUID>v2 = new Vector<UUID>();
+        Vector<Float>v3 = new Vector<Float>();
+        Vector<Vector>v = new Vector<>();
         try {
-            String q = "insert into order(order_id,cust_id,order_name,order_time,total_price,quantity,product_ids) values(?,?,?,current_timestamp,?,?,?)";
+              String q = "select * from orders where order_name=?";
             PreparedStatement pstmt = con.prepareStatement(q);
-            pstmt.setObject(1, order.getOrderId());
-            pstmt.setObject(2, order.getCustId());
-            pstmt.setString(3, name);
-            pstmt.setFloat(5, order.getTotalPrice());
-            pstmt.setString(6, order.getQuantity());
-            pstmt.setString(7, order.getProductIds());
+            pstmt.setString(1, name);
+            ResultSet set = pstmt.executeQuery();
+            while(set.next()){
+                UUID orderId = (UUID) set.getObject(1);
+                UUID custId = (UUID) set.getObject(2);
+                String productName = set.getString(3);
+                float totalPrice = set.getFloat(5);
+                String quantityId = set.getString(6);
+                String produxtId = set.getString(7);
+                v1.add(productName);
+                v1.add(quantityId);
+                v1.add(produxtId);
+                v2.add(orderId);
+                v2.add(custId);
+                v3.add(totalPrice);
+                v.add(v1);
+                v.add(v2);
+                v.add(v3);
 
-            pstmt.executeUpdate();
-            f = true;
+            }
+
         } catch (SQLException e) {
 
             throw new ApplicationRuntimeException(500,"Order cannot be shown",e);
 
         }
-        return f;
 
+     return v;
     }
 
 }

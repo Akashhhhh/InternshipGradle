@@ -75,7 +75,7 @@ public class OrderServiceTest {
     @Test
     public void testShowOrder() throws ApplicationRuntimeException, InvalidInputException {
 
-        orderService.showOrder("Diwali", con, order);
+        orderService.showOrder("Diwali", con);
 
     }
     @Test
@@ -83,7 +83,7 @@ public class OrderServiceTest {
 
         boolean thrown = false;
         try {
-            orderService.showOrder("akask1",con,order);
+            orderService.showOrder("akask1",con);
         } catch (InvalidInputException e) {
             thrown = true;
         }
