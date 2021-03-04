@@ -1,11 +1,13 @@
 package ecommerce.controller;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import ecommerce.cache.LruCacheService;
 import ecommerce.entity.Customer;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
+import ecommerce.model.CustomerModel;
 import ecommerce.service.CustomerService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,49 +27,51 @@ public class CustomerController {
     LruCacheService lruCacheService = new LruCacheService();
 
     @PostMapping("/addUser")
-    public String add(@Valid @RequestBody Customer customer) {
+    public ResponseEntity add(@Valid @RequestBody Customer customer) {
         try {
             customerService.addNewCustomer(customer, lruCacheService, con);
-            return "User added";
+            return  new ResponseEntity("User added to database", HttpStatus.OK);
         } catch (InvalidInputException e) {
             e.logError();
         } catch (ApplicationRuntimeException e) {
           e.logError();
         }
-        return "Not addded";
+        return  new ResponseEntity("User added not database", HttpStatus.BAD_REQUEST);
+
 
     }
 
     @PutMapping("/updateUser")
-    public String update(@RequestBody ObjectNode objectnode)  {
+    public ResponseEntity update(@Valid @RequestBody CustomerModel customerModel)  {
 
-        String email = objectnode.get("emailId").asText();
-        String address = objectnode.get("address").asText();
+        String email = customerModel.getEmailId();
+        String address = customerModel.getAddress();
         try {
             customerService.updateCustomer(email, address, lruCacheService, con);
-            return "User updated";
+            return  new ResponseEntity("User updated to database", HttpStatus.OK);
         } catch (InvalidInputException e) {
             e.logError();
         } catch (ApplicationRuntimeException e) {
            e.logError();
         }
-      return "User not updated";
+        return  new ResponseEntity("User is not updated to database", HttpStatus.BAD_REQUEST);
+
     }
 
 
     @DeleteMapping("/deleteUser")
-    public String delete(@RequestBody ObjectNode objectnode) {
+    public ResponseEntity delete(@Valid @RequestBody CustomerModel customerModel) {
 
-        String email = objectnode.get("emailId").asText();
+        String email = customerModel.getEmailId();
         try {
             customerService.deleteCustomer(email, lruCacheService, con);
-            return "User Deleted";
+            return  new ResponseEntity("User deleted", HttpStatus.OK);
         } catch (InvalidInputException e) {
             e.logError();
         } catch (ApplicationRuntimeException e) {
             e.logError();
         }
-       return "User not deleted";
+        return  new ResponseEntity("User updated to database", HttpStatus.BAD_REQUEST);
     }
 
 

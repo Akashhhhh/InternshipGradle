@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
+import ecommerce.model.ProductModel;
 import ecommerce.service.ProductService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -22,49 +25,55 @@ public class ProductController {
     java.sql.Connection con = ecommerce.util.Connection.create();
 
     @PostMapping("/addProduct")
-    public String add(@Valid @RequestBody Product product)  {
+    public ResponseEntity add(@Valid @RequestBody Product product)  {
         try {
             productService.addNewProduct(product, con);
-            return "Product Added";
+            return  new ResponseEntity("Product added", HttpStatus.OK);
+
         } catch (InvalidInputException e) {
            e.logError();
         } catch (ApplicationRuntimeException e) {
             e.logError();
         }
-      return "Product not added";
+        return  new ResponseEntity("Product not added", HttpStatus.BAD_REQUEST);
+
     }
     @PutMapping("/updateProduct")
-    public String update(@RequestBody ObjectNode objectnode)  {
+    public ResponseEntity update(@Valid @RequestBody ProductModel productModel)  {
 
-        int qt = objectnode.get("quantity").asInt();
-        String prodName = objectnode.get("prodName").asText();
+        int qt = productModel.getQuantity();
+        String prodName = productModel.getProdName();
         try {
             productService.updateProduct(qt, prodName, con);
-            return "Product Updated";
+            return  new ResponseEntity("Product updated to database", HttpStatus.OK);
+
         } catch (InvalidInputException e) {
             e.logError();
         } catch (ApplicationRuntimeException e) {
            e.logError();
         }
 
-      return "Product Not updated";
+        return  new ResponseEntity("Product not updated to database", HttpStatus.BAD_REQUEST);
+
     }
 
     @DeleteMapping("/deleteProduct")
-    public String delete(@RequestBody ObjectNode objectnode)  {
+    public ResponseEntity delete(@RequestBody ObjectNode objectnode)  {
 
 
         String prodName = objectnode.get("prodName").asText();
         try {
             productService.deleteProduct(prodName, con);
-            return "Product Deleted";
+            return  new ResponseEntity("Product Deleted", HttpStatus.OK);
+
         } catch (InvalidInputException e) {
             e.logError();
         } catch (ApplicationRuntimeException e) {
             e.logError();
         }
 
-       return "Product Not deleted";
+        return  new ResponseEntity("Product not deleted ", HttpStatus.BAD_REQUEST);
+
     }
 
 

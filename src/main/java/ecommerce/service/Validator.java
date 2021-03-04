@@ -1,7 +1,9 @@
 package ecommerce.service;
 
-import ecommerce.entity.*;
-import ecommerce.exception.*;
+import ecommerce.entity.Customer;
+import ecommerce.entity.Order;
+import ecommerce.entity.Product;
+import ecommerce.exception.InvalidInputException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

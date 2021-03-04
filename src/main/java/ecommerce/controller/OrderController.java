@@ -7,6 +7,8 @@ import ecommerce.entity.Order;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
 import ecommerce.service.OrderService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -27,7 +29,7 @@ public class OrderController {
     java.sql.Connection con = ecommerce.util.Connection.create();
 
     @PostMapping("/addOrder")
-    public String placeOrder(@Valid @RequestBody ObjectNode objectNode)  {
+    public ResponseEntity placeOrder(@Valid @RequestBody ObjectNode objectNode)  {
 
 
         LruCacheService lruCacheService = new LruCacheService();
@@ -35,6 +37,7 @@ public class OrderController {
         UUID custId = null;
         try {
             custId = orderService.CheckEmailId(email, lruCacheService, con);
+
         } catch (ApplicationRuntimeException e) {
             e.logError();
         } catch (InvalidInputException e) {
@@ -50,49 +53,51 @@ public class OrderController {
         od.setOrderId(UUID.randomUUID());
         try {
             orderService.addOrder(od, custId, name, con);
-            return "Order placed";
+            return  new ResponseEntity("User updated to database", HttpStatus.OK);
+
         } catch (ApplicationRuntimeException e) {
             e.logError();
         }
 
-        return "Order not placedddd";
+        return  new ResponseEntity("User updated to database", HttpStatus.BAD_REQUEST);
     }
 
     /**
      * This class is used when order is deleted from database
      */
     @DeleteMapping("/deleteOrder")
-    public String deleteOrder(@Valid @RequestBody ObjectNode objectNode) {
+    public ResponseEntity deleteOrder(@Valid @RequestBody ObjectNode objectNode) {
 
         String name = objectNode.get("name").asText();
         try {
             orderService.deleteOrder(name, con);
-            return "Order Deleted";
+            return  new ResponseEntity("Deleted", HttpStatus.OK);
         } catch (ApplicationRuntimeException e) {
             e.logError();
         } catch (InvalidInputException e) {
             e.logError();
         }
-        return "Order is not deleted";
+        return  new ResponseEntity("Not deleted", HttpStatus.BAD_REQUEST);
     }
 
     /**
      * This class is used for showing order
      */
     @GetMapping("/displayOrder")
-    public Vector<Vector> showOrder(@Valid @RequestBody ObjectNode objectNode) {
-
+    public ResponseEntity showOrder(@Valid @RequestBody ObjectNode objectNode) {
         String name = objectNode.get("name").asText();
         Vector<Vector>v = new Vector<>();
         try {
              v=orderService.showOrder(name, con);
-            return v;
+            return  new ResponseEntity("Order ", HttpStatus.OK);
+
         } catch (ApplicationRuntimeException e) {
             e.logError();
         } catch (InvalidInputException e) {
             e.logError();
         }
-     return v;
+        return  new ResponseEntity("order deleted", HttpStatus.BAD_REQUEST);
+
     }
 
 
