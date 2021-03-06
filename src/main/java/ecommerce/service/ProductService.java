@@ -1,9 +1,9 @@
 package ecommerce.service;
 
 import ecommerce.dao.ProductDao;
-import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
+import ecommerce.model.ProductModel;
 
 import java.sql.Connection;
 
@@ -33,7 +33,7 @@ public class ProductService {
      * @throws InvalidInputException for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public  void addNewProduct(Product obj, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+    public  void addNewProduct(ProductModel obj, Connection con) throws InvalidInputException, ApplicationRuntimeException {
         validator.validateProduct(obj);
         // dao
         productDao.insertProductToDb(obj, con);
@@ -66,7 +66,7 @@ public class ProductService {
      */
     public  void deleteProduct(String name, Connection con) throws InvalidInputException, ApplicationRuntimeException {
         if (!validator.validateString(name)) {
-            throw new InvalidInputException(400, "Check the name");
+            throw new InvalidInputException(400, "Check the product name");
 
         }
         productDao.deleteProductToDb(name,con);
@@ -77,4 +77,12 @@ public class ProductService {
         }
     }
 
+    public ProductModel getProduct(String name, Connection con) throws ApplicationRuntimeException, InvalidInputException {
+
+        if (!validator.validateString(name)) {
+            throw new InvalidInputException(400, "Check the product name");
+
+        }
+      return productDao.getProductToDb(name,con);
+    }
 }

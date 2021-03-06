@@ -5,6 +5,7 @@ import ecommerce.dao.ProductDao;
 import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
+import ecommerce.model.ProductModel;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ProductServiceTest {
     public static Connection con;
     public static Product product ;
+    public static ProductModel productModel ;
     public static LruCacheService lru ;
     public static ProductDao productDao ;
     public static Validator validator ;
@@ -36,12 +38,13 @@ public class ProductServiceTest {
         invalidInputException=Mockito.mock(InvalidInputException.class);
         applicationRuntimeException=Mockito.mock(ApplicationRuntimeException.class);
         productService = new ProductService(productDao,validator);
+        productModel =new ProductModel("Kawasaki",1234,"BS","Sport",12);
 
     }
 
     @Test
     public void testAddNewProduct() throws InvalidInputException, ApplicationRuntimeException {
-        productService.addNewProduct(product,con);
+        productService.addNewProduct(productModel,con);
 
     }
     @Test

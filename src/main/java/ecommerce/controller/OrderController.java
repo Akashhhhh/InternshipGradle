@@ -1,12 +1,15 @@
 package ecommerce.controller;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import ecommerce.cache.LruCacheService;
 import ecommerce.dao.OrderDao;
 import ecommerce.entity.Order;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
+import ecommerce.model.OrderModel;
+import ecommerce.model.ProductModel;
 import ecommerce.service.OrderService;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +23,7 @@ import java.util.Vector;
  *
  * @author Akash gupta
  */
-@RequestMapping("/user")
+@RequestMapping("/order")
 @RestController
 public class OrderController {
 
@@ -28,75 +31,140 @@ public class OrderController {
     OrderService orderService = new OrderService();
     java.sql.Connection con = ecommerce.util.Connection.create();
 
-    @PostMapping("/addOrder")
-    public ResponseEntity placeOrder(@Valid @RequestBody ObjectNode objectNode)  {
-
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 404, message = "not found in database!!!"),
+            @ApiResponse(code = 500, message = "sql exception")})
+    @PostMapping("/placeOrder") // will be use for adding products to cart
+    public ResponseEntity placeOrder(@Valid @RequestBody OrderModel orderModel) {
 
         LruCacheService lruCacheService = new LruCacheService();
-        String email = objectNode.get("emailId").asText();
+        String email = orderModel.getEmailId();
         UUID custId = null;
         try {
             custId = orderService.CheckEmailId(email, lruCacheService, con);
 
         } catch (ApplicationRuntimeException e) {
-            e.logError();
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
         } catch (InvalidInputException e) {
-            e.logError();
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
         }
 
-        float totalPrice = (float) objectNode.get("totalPrice").asDouble();
-        String quantities = objectNode.get("quantity").asText();
-        String prodIds = objectNode.get("productIds").asText();
-        String name = objectNode.get("name").asText();
+        if (custId != null) {
+            float totalPrice = 0;
+            String quantities = orderModel.getQuantity();
+            String prodIds = orderModel.getProductIds();
+            String name = orderModel.getOrderName();
+            int i, j;
+            for (i = 0; i < prodIds.length(); i++) {
+                String s = "";
+                for (j = i; j < prodIds.length() && prodIds.charAt(j) != ','; j++) {
+                    s = s + prodIds.charAt(j);
+                }
 
-        Order od = new Order(custId, totalPrice, quantities, prodIds);
-        od.setOrderId(UUID.randomUUID());
+                i = j;
+                try {
+                    totalPrice += orderService.getProductCost(UUID.fromString(s), con);
+                } catch (ApplicationRuntimeException e) {
+                    return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+
+                }
+            }
+
+            Order od = new Order(custId, totalPrice, quantities, prodIds);
+            try {
+                orderService.addOrder(od, custId, name, con);
+
+            } catch (ApplicationRuntimeException e) {
+                return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+
+            } catch (InvalidInputException e) {
+                return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+
+            }
+            return new ResponseEntity("Order Placed", HttpStatus.OK);
+        }
+        return new ResponseEntity("Cant placed order as user does not exist", HttpStatus.OK);
+
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 404, message = "not found in database!!!"),
+            @ApiResponse(code = 500, message = "sql exception")})
+    // method for displaying all product(giving error)
+    @PostMapping("/showMenu")
+    public ResponseEntity showMenu() {
+        Vector<ProductModel> v = new Vector<>();
         try {
-            orderService.addOrder(od, custId, name, con);
-            return  new ResponseEntity("User updated to database", HttpStatus.OK);
-
+            v = orderService.getMenu(con);
         } catch (ApplicationRuntimeException e) {
-            e.logError();
-        }
 
-        return  new ResponseEntity("User updated to database", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+
+        }
+        return new ResponseEntity(v, HttpStatus.OK);
+
     }
 
     /**
      * This class is used when order is deleted from database
      */
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 404, message = "not found in database!!!"),
+            @ApiResponse(code = 500, message = "sql exception")})
     @DeleteMapping("/deleteOrder")
-    public ResponseEntity deleteOrder(@Valid @RequestBody ObjectNode objectNode) {
+    public ResponseEntity deleteOrder(@Valid @RequestBody OrderModel orderModel) {
 
-        String name = objectNode.get("name").asText();
+        String name = orderModel.getOrderName();
+        Order order = null;
         try {
-            orderService.deleteOrder(name, con);
-            return  new ResponseEntity("Deleted", HttpStatus.OK);
+            order = orderService.showOrder(name, con);
+            if (order != null) {
+                orderService.deleteOrder(name, con);
+            } else {
+                return new ResponseEntity("Order does not exist", HttpStatus.OK);
+
+            }
+
         } catch (ApplicationRuntimeException e) {
-            e.logError();
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+
         } catch (InvalidInputException e) {
-            e.logError();
+
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+
         }
-        return  new ResponseEntity("Not deleted", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity("Order Deleted", HttpStatus.OK);
+
     }
 
     /**
      * This class is used for showing order
      */
-    @GetMapping("/displayOrder")
-    public ResponseEntity showOrder(@Valid @RequestBody ObjectNode objectNode) {
-        String name = objectNode.get("name").asText();
-        Vector<Vector>v = new Vector<>();
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success|OK"),
+            @ApiResponse(code = 404, message = "not found in database!!!"),
+            @ApiResponse(code = 500, message = "sql exception")})
+    @PostMapping("/displayCart")
+    public ResponseEntity showOrder(@Valid @RequestBody OrderModel orderModel) {
+        String name = orderModel.getOrderName();
+        Order order = null;
         try {
-             v=orderService.showOrder(name, con);
-            return  new ResponseEntity("Order ", HttpStatus.OK);
+            order = orderService.showOrder(name, con);
 
         } catch (ApplicationRuntimeException e) {
-            e.logError();
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
         } catch (InvalidInputException e) {
-            e.logError();
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+
         }
-        return  new ResponseEntity("order deleted", HttpStatus.BAD_REQUEST);
+        if (order != null) {
+            return new ResponseEntity(order, HttpStatus.OK);
+
+        }
+        return new ResponseEntity("Order does not exist", HttpStatus.OK);
 
     }
 

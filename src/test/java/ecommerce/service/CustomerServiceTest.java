@@ -5,6 +5,7 @@ import ecommerce.dao.CustomerDao;
 import ecommerce.entity.Customer;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
+import ecommerce.model.CustomerModel;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,6 +21,7 @@ public class CustomerServiceTest {
 
     public static Connection con;
     public static Customer customer ;
+    public static CustomerModel customerModel;
     public static LruCacheService lru ;
     public static CustomerDao customerDao ;
     public static Validator validator ;
@@ -34,12 +36,13 @@ public class CustomerServiceTest {
         validator = Mockito.mock(Validator.class);
         logger = Mockito.mock(Logger.class);
         customerService = new CustomerService(customerDao, validator, logger);
+        customerModel =new CustomerModel("Akash","Gupta","1234567890","akash@gmail.com","Agra","1998-02-18");
 
     }
     @Test
     public  void addNewCustomer() throws InvalidInputException, ApplicationRuntimeException {
 
-            customerService.addNewCustomer(customer, lru, con);
+            customerService.addNewCustomer(customerModel, lru, con);
 
     }
     @Test

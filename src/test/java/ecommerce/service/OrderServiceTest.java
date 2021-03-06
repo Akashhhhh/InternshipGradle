@@ -6,14 +6,14 @@ import ecommerce.entity.Order;
 import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
+import ecommerce.model.ProductModel;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,6 +28,7 @@ public class OrderServiceTest {
     public static Logger logger;
     static OrderService orderService;
     static Product product;
+    static ProductModel productModel;
 
     @BeforeAll
     public static void setup() {
@@ -41,6 +42,8 @@ public class OrderServiceTest {
         logger = Mockito.mock(Logger.class);
         orderService = new OrderService(orderDao, validator);
         product = new Product("Bike", 1234, "Sporst", "HArd", 12);
+        productModel = new ProductModel();
+
     }
 
     @Test
@@ -111,9 +114,9 @@ public class OrderServiceTest {
     }
     @Test
     public void testGetMenu() throws ApplicationRuntimeException, InvalidInputException {
-        Map<UUID, Product> menu = new HashMap<>();
-        menu.put(UUID.randomUUID(), product);
 
+        Vector<ProductModel>menu =new Vector<>();
+        menu.add(productModel);
         when(orderService.getMenu(con)).thenReturn(menu);
         orderService.getMenu(con);
 

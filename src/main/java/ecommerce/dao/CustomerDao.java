@@ -1,7 +1,7 @@
 package ecommerce.dao;
 
-import ecommerce.entity.Customer;
 import ecommerce.exception.ApplicationRuntimeException;
+import ecommerce.model.CustomerModel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,7 +29,7 @@ public class CustomerDao {
      * @param con connection
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public boolean insertCustomerToDb(Customer obj, Connection con) throws ApplicationRuntimeException {
+    public boolean insertCustomerToDb(CustomerModel obj, Connection con) throws ApplicationRuntimeException {
 
         try {
             String q = "insert into customer(cust_id,f_name,l_name,mobile_no,email_id,address,date_of_birth,date_created,date_last_modified) values(?,?,?,?,?,?,?,current_timestamp,current_timestamp)";
@@ -114,5 +114,28 @@ public class CustomerDao {
             throw new ApplicationRuntimeException(500, "Customer Id is not fetched", e);
         }
         return id;
+    }
+
+    public CustomerModel displayUsersToDb(String email, Connection con) throws ApplicationRuntimeException {
+        CustomerModel v = null;
+        try {
+            String q = "select * from customer where email_id=?";
+            PreparedStatement pstmt = con.prepareStatement(q);
+            pstmt.setString(1, email);
+            ResultSet set = pstmt.executeQuery();
+            while (set.next()) {
+                String fName = set.getString(2);
+                String lName = set.getString(3);
+                String mobile = set.getString(4);
+                String emailId = set.getString(5);
+                String address = set.getString(6);
+                String dob = set.getString(7);
+                v = new CustomerModel(fName,lName,mobile,emailId,address,dob);
+
+            }
+        } catch (SQLException e) {
+            throw new ApplicationRuntimeException(500, "Customers are not displayed", e);
+        }
+        return v;
     }
 }

@@ -4,12 +4,11 @@ import ecommerce.cache.LruCacheService;
 import ecommerce.controller.OrderController;
 import ecommerce.dao.OrderDao;
 import ecommerce.entity.Order;
-import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
+import ecommerce.model.ProductModel;
 
 import java.sql.Connection;
-import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -60,7 +59,7 @@ public class OrderService {
      * @throws InvalidInputException       for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public UUID CheckEmailId(String email, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+    public UUID CheckEmailId(String email, LruCacheService lru, Connection con) throws ApplicationRuntimeException, InvalidInputException {
         if (validator.validateEmailId(email)) {
             UUID cust_id = null;
             if (lru.find(email)) {
@@ -81,22 +80,34 @@ public class OrderService {
      * @param con  connection
      * @throws InvalidInputException for throwing user error
      */
-    public Vector<Vector> showOrder(String name, Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        Vector<Vector>v;
+    public Order showOrder(String name, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        Order order;
         if (validator.validateString(name)) {
-            v=orderDao.showOrderToDb(name,con);
+            order=orderDao.showOrderToDb(name,con);
         }
-        else throw new InvalidInputException(400, "Check the name");
+        else throw new InvalidInputException(400, "Check the order name");
 
-        return v;
+      return order;
     }
 
-    public Map<UUID, Product> getMenu(Connection con) throws ApplicationRuntimeException {
-        Map<UUID, Product> menu=orderDao.menu(con);
+    public Vector<ProductModel>getMenu(Connection con) throws ApplicationRuntimeException {
+        Vector<ProductModel> menu=orderDao.menu(con);
         return menu;
     }
 
-    public void addOrder(Order od, UUID custId, String name, Connection con) throws ApplicationRuntimeException {
-        orderDao.addOrderToDb(od, custId, name, con);
+    public void addOrder(Order od, UUID custId, String name, Connection con) throws ApplicationRuntimeException, InvalidInputException {
+        if(validator.validateOrder(od)){
+            orderDao.addOrderToDb(od, custId, name, con);
+        }
+
+    }
+
+    public float getProductCost(UUID u, Connection con) throws ApplicationRuntimeException {
+       return orderDao.getProductCostFromDb(u,con);
+
+    }
+
+    public void deleteOrderByCustId(UUID custId, Connection con) throws ApplicationRuntimeException {
+        orderDao.deleteOrderByCustIdToDb(custId,con);
     }
 }

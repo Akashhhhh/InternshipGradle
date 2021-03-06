@@ -1,9 +1,9 @@
 package ecommerce.service;
 
-import ecommerce.entity.Customer;
 import ecommerce.entity.Order;
-import ecommerce.entity.Product;
 import ecommerce.exception.InvalidInputException;
+import ecommerce.model.CustomerModel;
+import ecommerce.model.ProductModel;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -79,7 +79,7 @@ public class Validator {
      * @param obj
      * @throws InvalidInputException
      */
-    public  boolean validateCustomer(Customer obj) throws InvalidInputException {
+    public boolean validateCustomer(CustomerModel obj) throws InvalidInputException {
         String fName = obj.getfName();
         String lName = obj.getlName();
         String emailId = obj.getEmailId();
@@ -101,15 +101,16 @@ public class Validator {
             throw new InvalidInputException(400, "Check Mobile number");
         }
 
-      return true;
+        return true;
     }
 
     /**
      * This method is used for validating the object of product class
+     *
      * @param obj object of product class
      * @throws InvalidInputException for throwing user error
      */
-    public boolean  validateProduct(Product obj) throws InvalidInputException {
+    public boolean validateProduct(ProductModel obj) throws InvalidInputException {
         String name = obj.getProdName();
         String desc = obj.getDescription();
         String type = obj.getType();
@@ -130,6 +131,7 @@ public class Validator {
 
     /**
      * This method is used for validating object of order class
+     *
      * @param obj object of order class
      * @throws InvalidInputException for throwing user error
      */
@@ -138,29 +140,32 @@ public class Validator {
         String prodIds = obj.getProductIds();
         int flag = 0;
         for (int i = 0; i < qt.length(); i++) {
-            if (qt.charAt(i) >= '1' && qt.charAt(i) <= '9' || qt.charAt(i) == ',') {
+            if ((qt.charAt(i) >= '0' && qt.charAt(i) <= '9') || (qt.charAt(i) == ',')) {
 
-            } else
+            } else {
                 flag = 1;
-            break;
+                break;
+            }
 
 
         }
         if (flag == 1)
-            throw new InvalidInputException(400, "name should contain only alphabets");
+            throw new InvalidInputException(400, "check the quantities");
 
 
         for (int i = 0; i < prodIds.length(); i++) {
-            if (prodIds.charAt(i) >= '1' && prodIds.charAt(i) <= '9' ||prodIds.charAt(i) == ',') {
+            if ((prodIds.charAt(i) >= '1' && prodIds.charAt(i) <= '9') || (prodIds.charAt(i) == ',')) {
 
-            } else
+            } else {
                 flag = 1;
-            break;
+                break;
+            }
+
         }
 
         if (flag == 1) {
-            throw new InvalidInputException(400, "name should contain only alphabets");
+            throw new InvalidInputException(400, "check the product ids");
         }
-      return true;
+        return true;
     }
 }

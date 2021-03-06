@@ -22,8 +22,7 @@ public class CustomerModel {
 
     //@NotNullAnnotation
     private String dateOfBirth;
-    private String timeCreated; // when user creates its account
-    private String timeLastUpdated;
+
 
     public CustomerModel(){
 
@@ -75,11 +74,5 @@ public class CustomerModel {
         return dateOfBirth;
     }
 
-    public String getTimeCreated() {
-        return timeCreated;
-    }
 
-    public String getTimeLastUpdated() {
-        return timeLastUpdated;
-    }
 }

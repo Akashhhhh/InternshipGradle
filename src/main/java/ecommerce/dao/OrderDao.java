@@ -3,10 +3,9 @@ package ecommerce.dao;
 import ecommerce.entity.Order;
 import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
+import ecommerce.model.ProductModel;
 
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -17,9 +16,10 @@ import java.util.logging.Logger;
  * @author Akash Gupta
  */
 public class OrderDao {
-    private static Logger logger ;
+    private static Logger logger;
     Product product;
-    public OrderDao(){
+
+    public OrderDao() {
 
     }
 
@@ -27,6 +27,7 @@ public class OrderDao {
         this.logger = java.util.logging.Logger.getLogger(CustomerDao.class.getName());
 
     }
+
     /**
      * This method is used for creating query while placing order
      *
@@ -34,14 +35,14 @@ public class OrderDao {
      * @return it returns the map of product
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public  Map<UUID, Product> menu(Connection con) throws ApplicationRuntimeException {
-        boolean f = false;
-        Map<UUID, Product> v = new HashMap<UUID, Product>();
+    public Vector<ProductModel> menu(Connection con) throws ApplicationRuntimeException {
+
+        Vector<ProductModel> v = new Vector<ProductModel>();
 
         try {
             String q = "select * from product";
-            Statement stmt = con.prepareStatement(q);
-            ResultSet resultSet = stmt.executeQuery(q);
+            PreparedStatement stmt = con.prepareStatement(q);
+            ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
                 UUID prod_id = (UUID) resultSet.getObject(1);
                 String prod_name = resultSet.getString(2);
@@ -49,12 +50,12 @@ public class OrderDao {
                 String description = resultSet.getString(4);
                 String type = resultSet.getString(5);
                 int quantity = resultSet.getInt(6);
-                Product product = new Product(prod_name, sell_price, description, type, quantity);
-                v.put(prod_id, product);
+                ProductModel productModel = new ProductModel(prod_id,prod_name, sell_price, description, type, quantity);
+                v.add(productModel);
             }
 
         } catch (SQLException e) {
-            throw new ApplicationRuntimeException(500,"Menu is not displayed",e);
+            throw new ApplicationRuntimeException(500, "Menu is not displayed", e);
 
         }
         return v;
@@ -68,7 +69,7 @@ public class OrderDao {
      * @return it returns the customer id
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public  UUID getCustomerId(String email, Connection con) throws ApplicationRuntimeException {
+    public UUID getCustomerId(String email, Connection con) throws ApplicationRuntimeException {
         UUID id = null;
         try {
             String q = "select cust_id from customer where email_id=?";
@@ -79,7 +80,7 @@ public class OrderDao {
                 id = (UUID) rs.getObject(1);
             }
         } catch (SQLException e) {
-            throw new ApplicationRuntimeException(500,"Customer Id is not fetched",e);
+            throw new ApplicationRuntimeException(500, "Customer Id is not fetched", e);
 
         }
         return id;
@@ -101,13 +102,13 @@ public class OrderDao {
             pstmt.setObject(1, obj.getOrderId());
             pstmt.setObject(2, custId);
             pstmt.setString(3, name);
-            pstmt.setFloat( 4, obj.getTotalPrice());
+            pstmt.setFloat(4, obj.getTotalPrice());
             pstmt.setString(5, obj.getQuantity());
             pstmt.setString(6, obj.getProductIds());
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new ApplicationRuntimeException(500,"Order is not added to database",e);
+            throw new ApplicationRuntimeException(500, "Order is not added to database", e);
 
         }
     }
@@ -119,7 +120,7 @@ public class OrderDao {
      * @param con  connection
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public  void deleteOrderToDb(String name, Connection con) throws ApplicationRuntimeException {
+    public void deleteOrderToDb(String name, Connection con) throws ApplicationRuntimeException {
 
         try {
             String q = "delete from orders where order_name=?";
@@ -129,47 +130,74 @@ public class OrderDao {
 
 
         } catch (SQLException e) {
-            throw new ApplicationRuntimeException(500,"Order is not deleted in database",e);
+            throw new ApplicationRuntimeException(500, "Order is not deleted in database", e);
 
         }
 
     }
-    public Vector<Vector>showOrderToDb(String name,Connection con) throws ApplicationRuntimeException {
-        Vector<String >v1= new Vector<String >();
-        Vector<UUID>v2 = new Vector<UUID>();
-        Vector<Float>v3 = new Vector<Float>();
-        Vector<Vector>v = new Vector<>();
+
+    public Order showOrderToDb(String name, Connection con) throws ApplicationRuntimeException {
+        Order order = null;
         try {
-              String q = "select * from orders where order_name=?";
+            String q = "select * from orders where order_name=?";
             PreparedStatement pstmt = con.prepareStatement(q);
             pstmt.setString(1, name);
             ResultSet set = pstmt.executeQuery();
-            while(set.next()){
+            while (set.next()) {
                 UUID orderId = (UUID) set.getObject(1);
                 UUID custId = (UUID) set.getObject(2);
                 String productName = set.getString(3);
                 float totalPrice = set.getFloat(5);
                 String quantityId = set.getString(6);
-                String produxtId = set.getString(7);
-                v1.add(productName);
-                v1.add(quantityId);
-                v1.add(produxtId);
-                v2.add(orderId);
-                v2.add(custId);
-                v3.add(totalPrice);
-                v.add(v1);
-                v.add(v2);
-                v.add(v3);
+                String productId = set.getString(7);
 
+                order = new Order(custId, totalPrice, quantityId, productId);
             }
 
         } catch (SQLException e) {
 
-            throw new ApplicationRuntimeException(500,"Order cannot be shown",e);
+            throw new ApplicationRuntimeException(500, "Order cannot be shown", e);
 
         }
 
-     return v;
+        return order;
     }
 
+    public float getProductCostFromDb(UUID u, Connection con) throws ApplicationRuntimeException {
+        float price = 0;
+        try {
+            String q = "select sell_price from product where prod_id=?";
+            PreparedStatement pstmt = con.prepareStatement(q);
+            pstmt.setObject(1, u);
+            ResultSet set = pstmt.executeQuery();
+            while (set.next()) {
+                price = set.getFloat(1);
+
+            }
+        } catch (SQLException e) {
+
+            throw new ApplicationRuntimeException(500, "Cant get cost", e);
+
+        }
+
+        return price;
+    }
+
+
+    public void deleteOrderByCustIdToDb(UUID custId, Connection con) throws ApplicationRuntimeException {
+        float price = 0;
+        try {
+            String q = "delete from orders where cust_id=?";
+            PreparedStatement pstmt = con.prepareStatement(q);
+            pstmt.setObject(1, custId);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+
+            throw new ApplicationRuntimeException(500, "Cant delete the orders", e);
+
+        }
+
+
+    }
 }

@@ -3,19 +3,11 @@ package ecommerce.model;
 import java.util.UUID;
 
 public class ProductModel {
-    UUID prodId =UUID.randomUUID();
-
-
+    UUID prodId ;
     private String prodName;
-
     private int sellPrice;
-
-
     private String description;
-
-
     private String type;
-
     private int quantity;
 
     public ProductModel(){
@@ -36,6 +28,15 @@ public class ProductModel {
 
     public ProductModel(String prodName) {
         this.prodName = prodName;
+    }
+
+    public ProductModel(UUID prodId, String prodName, int sellPrice, String description, String type, int quantity) {
+        this.prodId = prodId;
+        this.prodName = prodName;
+        this.sellPrice = sellPrice;
+        this.description = description;
+        this.type = type;
+        this.quantity = quantity;
     }
 
     public UUID getProdId() {

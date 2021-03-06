@@ -1,11 +1,13 @@
 package ecommerce.dao;
 
-import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
+import ecommerce.model.ProductModel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
@@ -23,7 +25,7 @@ public class ProductDao {
      * @param con connection
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public void insertProductToDb(Product obj, Connection con) throws ApplicationRuntimeException {
+    public void insertProductToDb(ProductModel obj, Connection con) throws ApplicationRuntimeException {
 
         try {
             String q = "insert into product(prod_id,prod_name,sell_price,description,type,quantity) values(?,?,?,?,?,?)";
@@ -84,5 +86,29 @@ public class ProductDao {
         }
 
 
+    }
+
+    public ProductModel getProductToDb(String name, Connection con) throws ApplicationRuntimeException {
+        ProductModel productModel=null;
+        try {
+            String q = "select * from product where prod_name=?";
+            PreparedStatement pstmt = con.prepareStatement(q);
+            pstmt.setString(1, name);
+            ResultSet resultSet = pstmt.executeQuery();
+            while (resultSet.next()) {
+                UUID prod_id = (UUID) resultSet.getObject(1);
+                String prod_name = resultSet.getString(2);
+                int sell_price = resultSet.getInt(3);
+                String description = resultSet.getString(4);
+                String type = resultSet.getString(5);
+                int quantity = resultSet.getInt(6);
+                productModel = new ProductModel(prod_id,prod_name, sell_price, description, type, quantity);
+
+            }
+
+        } catch (SQLException e) {
+            throw new ApplicationRuntimeException(500, "Cant display the product", e.getCause());
+        }
+        return productModel;
     }
 }

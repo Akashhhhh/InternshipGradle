@@ -2,6 +2,7 @@ package ecommerce.dao;
 
 import ecommerce.entity.Customer;
 import ecommerce.exception.ApplicationRuntimeException;
+import ecommerce.model.CustomerModel;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,6 +20,7 @@ import static org.mockito.Mockito.when;
 public class CustomerDaoTest {
     static Connection con;
     static Customer customer;
+    static CustomerModel customerModel;
     static PreparedStatement preparedStatement;
     static ResultSet resultSet;
     static CustomerDao customerDao;
@@ -32,13 +34,15 @@ public class CustomerDaoTest {
         resultSet = Mockito.mock(ResultSet.class);
         customerDao = new CustomerDao();
         logger = Mockito.mock(Logger.class);
+        customerModel= new CustomerModel("Akash", "Gupta", "1234567890", "akash@gmail.com", "Agra", "1998-02-18");
+
     }
 
     @Test
     public void testInsertCustomerToDb() throws SQLException, ApplicationRuntimeException {
             when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
             when(preparedStatement.executeQuery()).thenReturn(resultSet);
-            customerDao.insertCustomerToDb(customer, con);
+            customerDao.insertCustomerToDb(customerModel, con);
 
     }
 

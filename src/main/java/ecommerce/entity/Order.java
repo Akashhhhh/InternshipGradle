@@ -14,6 +14,7 @@ public class Order {
 
     private String quantity; // list of units of every product
     private String productIds;
+
     public Order(UUID custId,float totalPrice, String quantity, String productIds){
         this.custId=custId;
         this.totalPrice = totalPrice;
@@ -45,7 +46,4 @@ public class Order {
         return productIds;
     }
 
-    public void setOrderId(UUID orderId) {
-        this.orderId = orderId;
-    }
 }
