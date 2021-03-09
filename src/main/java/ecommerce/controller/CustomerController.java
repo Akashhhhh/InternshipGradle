@@ -40,7 +40,7 @@ public class CustomerController {
             return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
 
         } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
         return new ResponseEntity("User Added", HttpStatus.OK);
@@ -72,7 +72,7 @@ public class CustomerController {
             return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
 
         } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity("User updated", HttpStatus.OK);
 
@@ -97,7 +97,7 @@ public class CustomerController {
         } catch (InvalidInputException e) {
             return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
         } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
         return new ResponseEntity("User Deleted", HttpStatus.OK);
@@ -114,7 +114,7 @@ public class CustomerController {
         try {
             customer = customerService.displayUsers(email, con);
         } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
         }catch (InvalidInputException e) {
             return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
         }
@@ -123,7 +123,6 @@ public class CustomerController {
         return new ResponseEntity("User does not exist", HttpStatus.OK);
 
     }
-
 
 
 }

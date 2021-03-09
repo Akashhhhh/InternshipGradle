@@ -37,7 +37,7 @@ public class ProductController {
             return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
 
         } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity("Product added", HttpStatus.OK);
 
@@ -67,7 +67,7 @@ public class ProductController {
             return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
 
         } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity("Product updated", HttpStatus.OK);
@@ -96,7 +96,7 @@ public class ProductController {
             return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
 
         } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity("Product deleted ", HttpStatus.OK);
@@ -118,7 +118,7 @@ public class ProductController {
             return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
 
         } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
         if (product != null) {

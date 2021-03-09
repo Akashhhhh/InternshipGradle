@@ -53,6 +53,14 @@ public class OrderServiceTest {
         orderService.addOrder(order, custId, "Diwali", con);
     }
 
+
+
+    @Test
+    public void testDeleteOrder() throws ApplicationRuntimeException, InvalidInputException {
+
+
+        orderService.deleteOrder("akask", con);
+    }
     @Test
     public void testDeleteOrderWhenException() throws ApplicationRuntimeException, InvalidInputException {
 
@@ -66,13 +74,6 @@ public class OrderServiceTest {
         assertTrue(thrown);
 
 
-    }
-
-    @Test
-    public void testDeleteOrder() throws ApplicationRuntimeException, InvalidInputException {
-
-
-        orderService.deleteOrder("akask", con);
     }
 
     @Test

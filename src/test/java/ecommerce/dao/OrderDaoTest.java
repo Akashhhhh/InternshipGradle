@@ -3,7 +3,7 @@ package ecommerce.dao;
 import ecommerce.entity.Order;
 import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -14,20 +14,21 @@ import java.sql.SQLException;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 public class OrderDaoTest {
-    static Connection con;
-    static Order order;
-    static PreparedStatement preparedStatement;
-    static ResultSet resultSet;
-    static OrderDao orderDao;
+     Connection con;
+     Order order;
+     PreparedStatement preparedStatement;
+     ResultSet resultSet;
+     OrderDao orderDao;
     public static Logger logger;
-    static Product product;
+     Product product;
 
-    @BeforeAll
-    public static void setup() {
+    @BeforeEach
+    public  void setup() {
         UUID u1 = UUID.randomUUID();
         UUID u2 = UUID.randomUUID();
         con = Mockito.mock(Connection.class);
@@ -43,25 +44,44 @@ public class OrderDaoTest {
     @Test
     public void testMenu() throws SQLException, ApplicationRuntimeException {
         when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
-
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-
-        when(resultSet.getObject(1)).thenReturn(UUID.randomUUID());
-        when(resultSet.getString(2)).thenReturn("Aventus");
-        when(resultSet.getFloat(3)).thenReturn(12F);
-        when(resultSet.getString(4)).thenReturn("perfume");
-        when(resultSet.getString(5)).thenReturn("EDP");
-        when(resultSet.getInt(6)).thenReturn(12);
-
+        when(resultSet.next()).thenReturn(true).thenReturn(false);
         orderDao.menu(con);
 
     }
     @Test
+    public void testMenuWithException() throws SQLException, ApplicationRuntimeException {
+       try{
+           when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
+           when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+           when(resultSet.next()).thenReturn(true).thenReturn(false);
+           orderDao.menu(con);
+       }catch (ApplicationRuntimeException e){
+           assertEquals("Menu is not displayed",e.getErrorDesc());
+       }
+
+    }
+
+
+
+    @Test
     public void testGetCustomerId() throws SQLException, ApplicationRuntimeException {
         when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.getObject(1)).thenReturn(UUID.randomUUID());
+        when(resultSet.next()).thenReturn(true).thenReturn(false);
         orderDao.getCustomerId("akash@gmail.com",con);
+
+    }
+    @Test
+    public void testGetCustomerIdWithException() throws SQLException, ApplicationRuntimeException {
+        try{
+            when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
+            when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+            when(resultSet.next()).thenReturn(true).thenReturn(false);
+            orderDao.getCustomerId("akash@gmail.com",con);
+        }catch (ApplicationRuntimeException e){
+            assertEquals("Customer Id is not fetched",e.getErrorDesc());
+        }
 
     }
     @Test
@@ -72,6 +92,17 @@ public class OrderDaoTest {
 
     }
     @Test
+    public void testAddOrderToDatabaseWithException() throws SQLException, ApplicationRuntimeException {
+        try{
+            when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
+            when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+            orderDao.addOrderToDb(order,UUID.randomUUID(),"order",con);
+        }catch (ApplicationRuntimeException e){
+            assertEquals("Order is not added to database",e.getErrorDesc());
+        }
+
+    }
+    @Test
     public void testDeleteOrderToDatabase() throws SQLException, ApplicationRuntimeException {
         when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -79,10 +110,72 @@ public class OrderDaoTest {
 
     }
     @Test
+    public void testDeleteOrderToDatabaseWithException() throws SQLException, ApplicationRuntimeException {
+        try{
+            when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
+            when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+            orderDao.deleteOrderToDb("order",con);
+        }catch (ApplicationRuntimeException e){
+            assertEquals("Order is not deleted in database",e.getErrorDesc());
+        }
+
+    }
+    @Test
     public void testShowOrderToDatabase() throws SQLException, ApplicationRuntimeException {
         when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true).thenReturn(false);
         orderDao.showOrderToDb("order",con);
+
+    }
+    @Test
+    public void testShowOrderToDatabaseWithException() throws SQLException, ApplicationRuntimeException {
+        try{
+            when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
+            when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+            when(resultSet.next()).thenReturn(true).thenReturn(false);
+            orderDao.showOrderToDb("order",con);
+        }catch (ApplicationRuntimeException e){
+            assertEquals("Order cannot be shown",e.getErrorDesc());
+        }
+
+    }
+
+    @Test
+    public void testGetProductCostFromDb()throws SQLException, ApplicationRuntimeException{
+        when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        orderDao.getProductCostFromDb(UUID.randomUUID(),con);
+    }
+
+    @Test
+    public void testGetProductCostFromDbWithException() throws SQLException, ApplicationRuntimeException {
+        try{
+            when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
+            when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+            orderDao.getProductCostFromDb(UUID.randomUUID(),con);
+        }catch (ApplicationRuntimeException e){
+            assertEquals("Cant get cost",e.getErrorDesc());
+        }
+
+    }
+
+    @Test
+    public void testdeleteOrderByCustIdToDb()throws SQLException, ApplicationRuntimeException{
+        when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        orderDao.deleteOrderByCustIdToDb(UUID.randomUUID(),con);
+    }
+
+    @Test
+    public void testdeleteOrderByCustIdToDbWithException() throws SQLException, ApplicationRuntimeException {
+        try{
+            when(con.prepareStatement(anyString())).thenReturn(preparedStatement);
+            when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+            orderDao.deleteOrderByCustIdToDb(UUID.randomUUID(),con);
+        }catch (ApplicationRuntimeException e){
+            assertEquals("Cant delete the orders",e.getErrorDesc());
+        }
 
     }
 }

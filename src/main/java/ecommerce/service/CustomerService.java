@@ -20,10 +20,11 @@ public class CustomerService {
     CustomerDao customerDao;
     Validator validator ;
     OrderService orderService;
-    public CustomerService(CustomerDao customerDao,Validator validator,Logger logger){
+    public CustomerService(CustomerDao customerDao,Validator validator,Logger logger,OrderService orderService){
       this.customerDao = customerDao;
       this.validator = validator;
       this.logger = logger;
+      this.orderService = orderService;
     }
     public CustomerService(){
         customerDao = new CustomerDao();
@@ -91,7 +92,6 @@ public class CustomerService {
     public void deleteCustomer(String email, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
         if (!validator.validateEmailId(email)) {
             throw new InvalidInputException(400, "Check the email id");
-
         }
         UUID custId = customerDao.getCustIdtByEmailId(email,con);
         orderService.deleteOrderByCustId(custId,con);

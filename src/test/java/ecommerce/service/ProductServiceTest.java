@@ -13,7 +13,9 @@ import org.mockito.Mockito;
 import java.sql.Connection;
 import java.util.logging.Logger;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
 
 public class ProductServiceTest {
     public static Connection con;
@@ -48,13 +50,27 @@ public class ProductServiceTest {
 
     }
     @Test
+    public void testAddNewProductWithInvalidName() throws ApplicationRuntimeException, InvalidInputException {
+        try {
+
+            doThrow(new InvalidInputException(400, "name should contain only alphabets")).when(validator).validateProduct(productModel);
+           productService.addNewProduct(productModel,con);
+
+        } catch (InvalidInputException e) {
+            assertEquals("name should contain only alphabets", e.getErrorDesc());
+        }
+
+    }
+    @Test
     public void testUpdateProductQuantityAtleastOne() throws InvalidInputException, ApplicationRuntimeException {
         productService.updateProduct(2,"akash",con);
     }
     @Test
     public void testUpdateProductWithValidName() throws InvalidInputException, ApplicationRuntimeException {
         productService.updateProduct(2,"akash",con);
-    } @Test
+    }
+
+    @Test
     public void testUpdateProductWithInValidName() throws InvalidInputException, ApplicationRuntimeException {
         boolean thrown = false;
         try {

@@ -45,7 +45,7 @@ public class OrderController {
             custId = orderService.CheckEmailId(email, lruCacheService, con);
 
         } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (InvalidInputException e) {
             return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
         }
@@ -66,7 +66,7 @@ public class OrderController {
                 try {
                     totalPrice += orderService.getProductCost(UUID.fromString(s), con);
                 } catch (ApplicationRuntimeException e) {
-                    return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
 
                 }
             }
@@ -76,7 +76,7 @@ public class OrderController {
                 orderService.addOrder(od, custId, name, con);
 
             } catch (ApplicationRuntimeException e) {
-                return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
 
             } catch (InvalidInputException e) {
                 return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
@@ -100,7 +100,7 @@ public class OrderController {
             v = orderService.getMenu(con);
         } catch (ApplicationRuntimeException e) {
 
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
         return new ResponseEntity(v, HttpStatus.OK);
@@ -129,7 +129,7 @@ public class OrderController {
             }
 
         } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
 
         } catch (InvalidInputException e) {
 
@@ -155,7 +155,7 @@ public class OrderController {
             order = orderService.showOrder(name, con);
 
         } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (InvalidInputException e) {
             return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
 
