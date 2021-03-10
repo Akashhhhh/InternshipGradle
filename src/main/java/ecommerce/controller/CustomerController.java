@@ -1,9 +1,10 @@
 package ecommerce.controller;
 
 import ecommerce.cache.LruCacheService;
+import ecommerce.entity.Customer;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
-import ecommerce.model.CustomerModel;
+import ecommerce.model.*;
 import ecommerce.service.CustomerService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.UUID;
 
 /**
  * This class manages add,update and delete operation of customer in database
@@ -32,18 +34,23 @@ public class CustomerController {
             @ApiResponse(code = 200, message = "Success|OK"),
             @ApiResponse(code = 404, message = "not found in database!!!"),
             @ApiResponse(code = 500, message = "sql exception")})
-    @PostMapping("/addUser")
-    public ResponseEntity add(@Valid @RequestBody CustomerModel customerModel) {
+    @PostMapping("/createUser")
+    public ResponseEntity add(@Valid @RequestBody CustomerCreateRequestModel customerCreateRequestModel) {
+        CustomerIdResponseModel customerIdResponseModel;
+        Customer customer = new Customer(customerCreateRequestModel.getfName(),customerCreateRequestModel.getlName(),
+                customerCreateRequestModel.getMobileNo(),customerCreateRequestModel.getEmailId(),customerCreateRequestModel.getAddress(),customerCreateRequestModel.getDateOfBirth());
         try {
-            customerService.addNewCustomer(customerModel, lruCacheService, con);
+            customerService.addNewCustomer(customer, lruCacheService, con);
+            customerIdResponseModel= new CustomerIdResponseModel(customer.getCustId());
         } catch (InvalidInputException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+            ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErroCode());
+            return new ResponseEntity(exceptionResponseModel,HttpStatus.BAD_REQUEST);
 
         } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
-
+            ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErrorCode());
+            return new ResponseEntity(exceptionResponseModel,HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity("User Added", HttpStatus.OK);
+        return new ResponseEntity(customerIdResponseModel, HttpStatus.OK);
 
 
     }
@@ -53,26 +60,21 @@ public class CustomerController {
             @ApiResponse(code = 404, message = "not found in database!!!"),
             @ApiResponse(code = 500, message = "sql exception")})
     @PutMapping("/updateUser")
-    public ResponseEntity update(@Valid @RequestBody CustomerModel customerModel) {
+    public ResponseEntity update(@Valid @RequestBody CustomerAddressRequestModel customerAddressRequestModel) {
 
-        String email = customerModel.getEmailId();
-        String address = customerModel.getAddress();
-
-        CustomerModel customer = null;
+       UUID custId = customerAddressRequestModel.getCustomerId();
+       String address = customerAddressRequestModel.getAddress();
         try {
-            customer = customerService.displayUsers(email, con);
-            if (customer != null) {
-                customerService.updateCustomer(email, address, lruCacheService, con);
+            customerService.displayUsers(custId, con);
+            customerService.updateCustomer(custId, address, lruCacheService, con);
 
-            } else {
-                return new ResponseEntity("User not exist", HttpStatus.OK);
-
-            }
         } catch (InvalidInputException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+            ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErroCode());
+            return new ResponseEntity(exceptionResponseModel,HttpStatus.BAD_REQUEST);
 
         } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
+            ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErrorCode());
+            return new ResponseEntity(exceptionResponseModel,HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity("User updated", HttpStatus.OK);
 
@@ -83,22 +85,20 @@ public class CustomerController {
             @ApiResponse(code = 404, message = "not found in database!!!"),
             @ApiResponse(code = 500, message = "sql exception")})
 
-    @DeleteMapping("/deleteUser")
-    public ResponseEntity delete(@Valid @RequestBody CustomerModel customerModel) {
-        String email = customerModel.getEmailId();
-        CustomerModel customer = null;
-        try {
-            customer = customerService.displayUsers(email, con);
-            if (customer != null) {
-                customerService.deleteCustomer(email, lruCacheService, con);
-            } else {
-                return new ResponseEntity("User not exist", HttpStatus.OK);
-            }
-        } catch (InvalidInputException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
-        } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
+    @DeleteMapping("/deleteUser/{custId}")
+    public ResponseEntity delete(@Valid @PathVariable UUID custId){
 
+        try {
+            customerService.displayUsers(custId, con);
+            customerService.deleteCustomer(custId, lruCacheService, con);
+
+        } catch (InvalidInputException e) {
+            ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErroCode());
+            return new ResponseEntity(exceptionResponseModel,HttpStatus.BAD_REQUEST);
+
+        } catch (ApplicationRuntimeException e) {
+            ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErrorCode());
+            return new ResponseEntity(exceptionResponseModel,HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity("User Deleted", HttpStatus.OK);
     }
@@ -107,20 +107,21 @@ public class CustomerController {
             @ApiResponse(code = 200, message = "Success|OK"),
             @ApiResponse(code = 404, message = "not found in database!!!"),
             @ApiResponse(code = 500, message = "sql exception")})
-    @PostMapping("/displayUser")
-    public ResponseEntity display(@Valid @RequestBody CustomerModel customerModel) {
-        String email = customerModel.getEmailId();
-        CustomerModel customer = null;
+    @GetMapping("/readUser/{custId}")
+    public ResponseEntity display(@Valid @PathVariable String custId) {
+        CustomerDisplayResponseModel customerDisplayResponseModel;
         try {
-            customer = customerService.displayUsers(email, con);
+            customerDisplayResponseModel=customerService.displayUsers(UUID.fromString(custId), con);
+        } catch (InvalidInputException e) {
+            ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErroCode());
+            return new ResponseEntity(exceptionResponseModel,HttpStatus.BAD_REQUEST);
+
         } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }catch (InvalidInputException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+            ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErrorCode());
+            return new ResponseEntity(exceptionResponseModel,HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if (customer != null) return new ResponseEntity(customer, HttpStatus.OK);
-        return new ResponseEntity("User does not exist", HttpStatus.OK);
+        return new ResponseEntity(customerDisplayResponseModel, HttpStatus.OK );
 
     }
 

@@ -2,7 +2,7 @@ package ecommerce.model;
 
 import java.util.UUID;
 
-public class ProductModel {
+public class ProductDisplayResponseModel {
     UUID prodId ;
     private String prodName;
     private int sellPrice;
@@ -10,27 +10,10 @@ public class ProductModel {
     private String type;
     private int quantity;
 
-    public ProductModel(){
-
-    }
-    public ProductModel( String prodName, int sellPrice, String description, String type, int quantity ){
-        this.prodName = prodName;
-        this.sellPrice = sellPrice;
-        this.description = description;
-        this.type = type;
-        this.quantity = quantity;
+    public ProductDisplayResponseModel() {
     }
 
-    public ProductModel(String prodName, int quantity) {
-        this.prodName = prodName;
-        this.quantity = quantity;
-    }
-
-    public ProductModel(String prodName) {
-        this.prodName = prodName;
-    }
-
-    public ProductModel(UUID prodId, String prodName, int sellPrice, String description, String type, int quantity) {
+    public ProductDisplayResponseModel(UUID prodId, String prodName, int sellPrice, String description, String type, int quantity) {
         this.prodId = prodId;
         this.prodName = prodName;
         this.sellPrice = sellPrice;

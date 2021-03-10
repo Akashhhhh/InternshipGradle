@@ -2,8 +2,7 @@ package ecommerce.model;
 
 import java.util.UUID;
 
-public class CustomerModel {
-    UUID custId = UUID.randomUUID(); // customer id
+public class CustomerCreateRequestModel {
 
     // @InvalidNameAnnotation
     private String fName;
@@ -23,12 +22,11 @@ public class CustomerModel {
     //@NotNullAnnotation
     private String dateOfBirth;
 
-
-    public CustomerModel(){
-
+    public CustomerCreateRequestModel() {
     }
 
-    public CustomerModel(String fName, String lName, String mobileNo, String emailId, String address, String dateOfBirth) {
+    public CustomerCreateRequestModel(UUID custId, String fName, String lName, String mobileNo, String emailId, String address, String dateOfBirth) {
+
         this.fName = fName;
         this.lName = lName;
         this.mobileNo = mobileNo;
@@ -37,18 +35,31 @@ public class CustomerModel {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public CustomerModel(String emailId, String address) {
+
+    public void setfName(String fName) {
+        this.fName = fName;
+    }
+
+    public void setlName(String lName) {
+        this.lName = lName;
+    }
+
+    public void setMobileNo(String mobileNo) {
+        this.mobileNo = mobileNo;
+    }
+
+    public void setEmailId(String emailId) {
         this.emailId = emailId;
+    }
+
+    public void setAddress(String address) {
         this.address = address;
     }
 
-    public CustomerModel(String emailId) {
-        this.emailId = emailId;
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
-    public UUID getCustId() {
-        return custId;
-    }
 
     public String getfName() {
         return fName;
@@ -73,6 +84,4 @@ public class CustomerModel {
     public String getDateOfBirth() {
         return dateOfBirth;
     }
-
-
 }

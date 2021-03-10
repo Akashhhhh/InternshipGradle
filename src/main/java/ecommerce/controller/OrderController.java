@@ -5,8 +5,10 @@ import ecommerce.dao.OrderDao;
 import ecommerce.entity.Order;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
-import ecommerce.model.OrderModel;
-import ecommerce.model.ProductModel;
+import ecommerce.model.ExceptionResponseModel;
+import ecommerce.model.OrderDisplayResponseModel;
+import ecommerce.model.OrderIdResponseModel;
+import ecommerce.model.OrderCreateRequestModel;
 import ecommerce.service.OrderService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -35,27 +37,44 @@ public class OrderController {
             @ApiResponse(code = 200, message = "Success|OK"),
             @ApiResponse(code = 404, message = "not found in database!!!"),
             @ApiResponse(code = 500, message = "sql exception")})
-    @PostMapping("/placeOrder") // will be use for adding products to cart
-    public ResponseEntity placeOrder(@Valid @RequestBody OrderModel orderModel) {
+
+    @PostMapping("/createOrder") // will be use for adding products to cart
+    public ResponseEntity placeOrder(@Valid @RequestBody OrderCreateRequestModel orderCreateRequestModel) {
 
         LruCacheService lruCacheService = new LruCacheService();
-        String email = orderModel.getEmailId();
+        String email = orderCreateRequestModel.getEmailId();
         UUID custId = null;
         try {
             custId = orderService.CheckEmailId(email, lruCacheService, con);
 
-        } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (InvalidInputException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
+            ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErroCode());
+            return new ResponseEntity(exceptionResponseModel,HttpStatus.BAD_REQUEST);
+
+        } catch (ApplicationRuntimeException e) {
+            ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErrorCode());
+            return new ResponseEntity(exceptionResponseModel,HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if (custId != null) {
             float totalPrice = 0;
-            String quantities = orderModel.getQuantity();
-            String prodIds = orderModel.getProductIds();
-            String name = orderModel.getOrderName();
+            String quantities = orderCreateRequestModel.getQuantity();
+            String prodIds = orderCreateRequestModel.getProductIds();
+            String name = orderCreateRequestModel.getOrderName();
             int i, j;
+            Vector<Integer> v = new Vector<Integer>();
+
+            for (i = 0; i < quantities.length(); i++) {
+                String s = "";
+                for (j = i; j < quantities.length() && quantities.charAt(j) != ','; j++) {
+                    s = s + quantities.charAt(j);
+                }
+                i = j;
+                int n = Integer.parseInt(s);
+                v.add(n);
+
+            }
+            int k = 0;
             for (i = 0; i < prodIds.length(); i++) {
                 String s = "";
                 for (j = i; j < prodIds.length() && prodIds.charAt(j) != ','; j++) {
@@ -64,48 +83,42 @@ public class OrderController {
 
                 i = j;
                 try {
-                    totalPrice += orderService.getProductCost(UUID.fromString(s), con);
-                } catch (ApplicationRuntimeException e) {
-                    return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
+                    orderService.checkUUID(s);
+                    int qt = orderService.getQuantity(UUID.fromString(s), con);
+                    orderService.checkQt(v.elementAt(k), qt);
+                    totalPrice += orderService.getProductCost(UUID.fromString(s), con) * v.elementAt(k);
+                } catch (InvalidInputException e) {
+                    ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErroCode());
+                    return new ResponseEntity(exceptionResponseModel,HttpStatus.BAD_REQUEST);
 
+                } catch (ApplicationRuntimeException e) {
+                    ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErrorCode());
+                    return new ResponseEntity(exceptionResponseModel,HttpStatus.INTERNAL_SERVER_ERROR);
                 }
+                k++;
             }
 
-            Order od = new Order(custId, totalPrice, quantities, prodIds);
+
+            Order order = new Order(custId, totalPrice, quantities, prodIds);
+            OrderIdResponseModel orderIdModel;
             try {
-                orderService.addOrder(od, custId, name, con);
+                orderService.addOrder(order, custId, name, con);
+                orderIdModel = new OrderIdResponseModel(order.getOrderId());
+            } catch (InvalidInputException e) {
+                ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErroCode());
+                return new ResponseEntity(exceptionResponseModel,HttpStatus.BAD_REQUEST);
 
             } catch (ApplicationRuntimeException e) {
-                return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
-
-            } catch (InvalidInputException e) {
-                return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
-
+                ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErrorCode());
+                return new ResponseEntity(exceptionResponseModel,HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            return new ResponseEntity("Order Placed", HttpStatus.OK);
+            return new ResponseEntity(orderIdModel, HttpStatus.OK);
         }
-        return new ResponseEntity("Cant placed order as user does not exist", HttpStatus.OK);
+        ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel("Cant placed order as user does not exist",400);
+        return new ResponseEntity(exceptionResponseModel,HttpStatus.BAD_REQUEST);
 
     }
 
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success|OK"),
-            @ApiResponse(code = 404, message = "not found in database!!!"),
-            @ApiResponse(code = 500, message = "sql exception")})
-    // method for displaying all product(giving error)
-    @PostMapping("/showMenu")
-    public ResponseEntity showMenu() {
-        Vector<ProductModel> v = new Vector<>();
-        try {
-            v = orderService.getMenu(con);
-        } catch (ApplicationRuntimeException e) {
-
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
-
-        }
-        return new ResponseEntity(v, HttpStatus.OK);
-
-    }
 
     /**
      * This class is used when order is deleted from database
@@ -114,27 +127,18 @@ public class OrderController {
             @ApiResponse(code = 200, message = "Success|OK"),
             @ApiResponse(code = 404, message = "not found in database!!!"),
             @ApiResponse(code = 500, message = "sql exception")})
-    @DeleteMapping("/deleteOrder")
-    public ResponseEntity deleteOrder(@Valid @RequestBody OrderModel orderModel) {
-
-        String name = orderModel.getOrderName();
-        Order order = null;
+    @DeleteMapping("/deleteOrder/{orderId}")
+    public ResponseEntity deleteOrder(@Valid @PathVariable String orderId) {
         try {
-            order = orderService.showOrder(name, con);
-            if (order != null) {
-                orderService.deleteOrder(name, con);
-            } else {
-                return new ResponseEntity("Order does not exist", HttpStatus.OK);
-
-            }
+            orderService.showOrder(orderId, con);
+            orderService.deleteOrder(orderId, con);
+        } catch (InvalidInputException e) {
+            ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErroCode());
+            return new ResponseEntity(exceptionResponseModel,HttpStatus.BAD_REQUEST);
 
         } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
-
-        } catch (InvalidInputException e) {
-
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
-
+            ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErrorCode());
+            return new ResponseEntity(exceptionResponseModel,HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity("Order Deleted", HttpStatus.OK);
 
@@ -147,24 +151,21 @@ public class OrderController {
             @ApiResponse(code = 200, message = "Success|OK"),
             @ApiResponse(code = 404, message = "not found in database!!!"),
             @ApiResponse(code = 500, message = "sql exception")})
-    @PostMapping("/displayCart")
-    public ResponseEntity showOrder(@Valid @RequestBody OrderModel orderModel) {
-        String name = orderModel.getOrderName();
-        Order order = null;
+    @GetMapping("/readOrder/{orderId}")
+    public ResponseEntity showOrder(@Valid @PathVariable String orderId) {
+        OrderDisplayResponseModel orderDisplayResponseModel;
         try {
-            order = orderService.showOrder(name, con);
+            orderDisplayResponseModel = orderService.showOrder(orderId, con);
+
+        } catch (InvalidInputException e) {
+            ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErroCode());
+            return new ResponseEntity(exceptionResponseModel,HttpStatus.BAD_REQUEST);
 
         } catch (ApplicationRuntimeException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (InvalidInputException e) {
-            return new ResponseEntity(e.getErrorDesc(), HttpStatus.BAD_REQUEST);
-
+            ExceptionResponseModel exceptionResponseModel = new ExceptionResponseModel(e.getErrorDesc(),e.getErrorCode());
+            return new ResponseEntity(exceptionResponseModel,HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        if (order != null) {
-            return new ResponseEntity(order, HttpStatus.OK);
-
-        }
-        return new ResponseEntity("Order does not exist", HttpStatus.OK);
+        return new ResponseEntity(orderDisplayResponseModel, HttpStatus.OK);
 
     }
 

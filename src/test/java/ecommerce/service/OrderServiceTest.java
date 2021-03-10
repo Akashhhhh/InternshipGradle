@@ -6,7 +6,7 @@ import ecommerce.entity.Order;
 import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
-import ecommerce.model.ProductModel;
+import ecommerce.model.ProductCreateRequestModel;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -28,7 +28,7 @@ public class OrderServiceTest {
     public static Logger logger;
     static OrderService orderService;
     static Product product;
-    static ProductModel productModel;
+    static ProductCreateRequestModel productModel;
 
     @BeforeAll
     public static void setup() {
@@ -42,7 +42,7 @@ public class OrderServiceTest {
         logger = Mockito.mock(Logger.class);
         orderService = new OrderService(orderDao, validator);
         product = new Product("Bike", 1234, "Sporst", "HArd", 12);
-        productModel = new ProductModel();
+        productModel = new ProductCreateRequestModel();
 
     }
 
@@ -116,7 +116,7 @@ public class OrderServiceTest {
     @Test
     public void testGetMenu() throws ApplicationRuntimeException, InvalidInputException {
 
-        Vector<ProductModel>menu =new Vector<>();
+        Vector<ProductCreateRequestModel>menu =new Vector<>();
         menu.add(productModel);
         when(orderService.getMenu(con)).thenReturn(menu);
         orderService.getMenu(con);

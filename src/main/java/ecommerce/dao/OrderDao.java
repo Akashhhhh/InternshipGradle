@@ -3,11 +3,12 @@ package ecommerce.dao;
 import ecommerce.entity.Order;
 import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
-import ecommerce.model.ProductModel;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
-import java.util.Vector;
 import java.util.logging.Logger;
 
 /**
@@ -35,31 +36,7 @@ public class OrderDao {
      * @return it returns the map of product
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public Vector<ProductModel> menu(Connection con) throws ApplicationRuntimeException {
 
-        Vector<ProductModel> v = new Vector<ProductModel>();
-
-        try {
-            String q = "select * from product";
-            PreparedStatement stmt = con.prepareStatement(q);
-            ResultSet resultSet = stmt.executeQuery();
-            while (resultSet.next()) {
-                UUID prod_id = (UUID) resultSet.getObject(1);
-                String prod_name = resultSet.getString(2);
-                int sell_price = resultSet.getInt(3);
-                String description = resultSet.getString(4);
-                String type = resultSet.getString(5);
-                int quantity = resultSet.getInt(6);
-                ProductModel productModel = new ProductModel(prod_id,prod_name, sell_price, description, type, quantity);
-                v.add(productModel);
-            }
-
-        } catch (SQLException e) {
-            throw new ApplicationRuntimeException(500, "Menu is not displayed", e);
-
-        }
-        return v;
-    }
 
     /**
      * This method is used for fetching customer id
@@ -116,16 +93,15 @@ public class OrderDao {
     /**
      * This method is used for creating query while deleting order from database
      *
-     * @param name name of order
      * @param con  connection
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public void deleteOrderToDb(String name, Connection con) throws ApplicationRuntimeException {
+    public void deleteOrderToDb(UUID uuid, Connection con) throws ApplicationRuntimeException {
 
         try {
-            String q = "delete from orders where order_name=?";
+            String q = "delete from orders where order_id=?";
             PreparedStatement pstmt = con.prepareStatement(q);
-            pstmt.setString(1, name);
+            pstmt.setObject(1, uuid);
             pstmt.executeUpdate();
 
 
@@ -136,15 +112,19 @@ public class OrderDao {
 
     }
 
-    public Order showOrderToDb(String name, Connection con) throws ApplicationRuntimeException {
+    public Order
+
+
+
+    showOrderToDb(UUID orderId, Connection con) throws ApplicationRuntimeException {
         Order order = null;
         try {
-            String q = "select * from orders where order_name=?";
+            String q = "select * from orders where order_id=?";
             PreparedStatement pstmt = con.prepareStatement(q);
-            pstmt.setString(1, name);
+            pstmt.setObject(1, orderId);
             ResultSet set = pstmt.executeQuery();
             while (set.next()) {
-                UUID orderId = (UUID) set.getObject(1);
+               // UUID orderID = (UUID) set.getObject(1);
                 UUID custId = (UUID) set.getObject(2);
                 String productName = set.getString(3);
                 float totalPrice = set.getFloat(5);
@@ -185,7 +165,7 @@ public class OrderDao {
 
 
     public void deleteOrderByCustIdToDb(UUID custId, Connection con) throws ApplicationRuntimeException {
-        float price = 0;
+
         try {
             String q = "delete from orders where cust_id=?";
             PreparedStatement pstmt = con.prepareStatement(q);
@@ -199,5 +179,24 @@ public class OrderDao {
         }
 
 
+    }
+
+    public int getQuantityToDb(UUID prodId, Connection con) throws ApplicationRuntimeException {
+        int qt=0;
+        try {
+            String q = "select quantity from product where prod_id=?";
+            PreparedStatement pstmt = con.prepareStatement(q);
+            pstmt.setObject(1, prodId);
+            ResultSet set = pstmt.executeQuery();
+            while (set.next()) {
+                qt = set.getInt(1);
+
+            }
+        } catch (SQLException e) {
+
+            throw new ApplicationRuntimeException(500, "Cant get the quantity", e);
+
+        }
+        return qt;
     }
 }

@@ -2,9 +2,10 @@ package ecommerce.service;
 
 import ecommerce.cache.LruCacheService;
 import ecommerce.dao.CustomerDao;
+import ecommerce.entity.Customer;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
-import ecommerce.model.CustomerModel;
+import ecommerce.model.CustomerDisplayResponseModel;
 
 import java.sql.Connection;
 import java.util.UUID;
@@ -37,18 +38,18 @@ public class CustomerService {
     /**
      * This class is used for validation when customer is added to database
      *
-     * @param obj object of customer class
+     * @param customer object of customer class
      * @param lru cache
      * @param con connection
      * @throws InvalidInputException       for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public void addNewCustomer(CustomerModel obj, LruCacheService lru , Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        validator.validateCustomer(obj);
+    public void addNewCustomer(Customer customer, LruCacheService lru , Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        validator.validateCustomer(customer);
 
-        customerDao.insertCustomerToDb(obj, con);
+        customerDao.insertCustomerToDb(customer, con);
 
-        lru.put(obj.getEmailId(), obj.getCustId());
+        lru.put(customer.getEmailId(), customer.getCustId());
         logger.info("Customer added into cache");
 
     }
@@ -56,26 +57,18 @@ public class CustomerService {
     /**
      * This class is used for validation when customer information is updated in database
      *
-     * @param email   email id of customer
+     * @param custId id of customer
      * @param address address that is updated
      * @param lru     cache
      * @param con     connection
      * @throws InvalidInputException       for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public void updateCustomer(String email, String address, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        if (!validator.validateEmailId(email)) {
-            throw new InvalidInputException(400, "Check the email id");
-        }
+    public void updateCustomer(UUID custId, String address, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        validator.validateUUID(custId.toString());
 
-        customerDao.updateCustomerToDb(email, address, con);
+        customerDao.updateCustomerToDb(custId, address, con);
 
-        // lru
-        if (!lru.find(email)) {
-            UUID custId = customerDao.getCustIdtByEmailId(email, con);
-            lru.put(email, custId);
-            logger.info("Customer info updated in cache");
-        }
 
 
     }
@@ -83,32 +76,32 @@ public class CustomerService {
     /**
      * This class is used for validation when customer information is deleted from database
      *
-     * @param email email id of customer
+     * @param custId customer id of customer
      * @param lru   cache
      * @param con   connection
      * @throws InvalidInputException       for throwing user error
      * @throws ApplicationRuntimeException for throwing application error
      */
-    public void deleteCustomer(String email, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
-        if (!validator.validateEmailId(email)) {
-            throw new InvalidInputException(400, "Check the email id");
-        }
-        UUID custId = customerDao.getCustIdtByEmailId(email,con);
-        orderService.deleteOrderByCustId(custId,con);
-        customerDao.deleteCustomerToDb(email, con);
-        if (lru.find(email)) {
-            lru.delete(email);
-            logger.info("Customer deleted from cache");
-        }
+    public void deleteCustomer(UUID custId, LruCacheService lru, Connection con) throws InvalidInputException, ApplicationRuntimeException {
+        validator.validateUUID(custId.toString());
+        orderService.deleteOrderByCustId(UUID.fromString(String.valueOf(custId)),con);
+        customerDao.deleteCustomerToDb(custId, con);
+
 
     }
-    public CustomerModel displayUsers(String email, Connection con) throws ApplicationRuntimeException, InvalidInputException {
-        if (!validator.validateEmailId(email)) {
-            throw new InvalidInputException(400, "Check the email id");
+    public CustomerDisplayResponseModel displayUsers(UUID custId, Connection con) throws ApplicationRuntimeException, InvalidInputException {
+        validator.validateUUID(custId.toString());
+        Customer customer =null;
+        customer=customerDao.displayUsersToDb(custId,con);
 
+        if(customer==null){
+            throw new InvalidInputException(400,"User does not exist");
         }
-        return customerDao.displayUsersToDb(email,con);
+        CustomerDisplayResponseModel customerDisplayResponseModel =new CustomerDisplayResponseModel(custId,customer.getfName(),customer.getlName(),customer.getMobileNo(),customer.getEmailId(),customer.getAddress(),customer.getDateOfBirth());
+
+        return customerDisplayResponseModel;
     }
+
 
 }
 

@@ -1,9 +1,9 @@
 package ecommerce.service;
 
+import ecommerce.entity.Customer;
 import ecommerce.entity.Order;
+import ecommerce.entity.Product;
 import ecommerce.exception.InvalidInputException;
-import ecommerce.model.CustomerModel;
-import ecommerce.model.ProductModel;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,15 +76,15 @@ public class Validator {
     }
 
     /**
-     * @param obj
+     * @param customer
      * @throws InvalidInputException
      */
-    public boolean validateCustomer(CustomerModel obj) throws InvalidInputException {
-        String fName = obj.getfName();
-        String lName = obj.getlName();
-        String emailId = obj.getEmailId();
-        String dateOfBirth = obj.getDateOfBirth();
-        String mobileNo = obj.getMobileNo();
+    public boolean validateCustomer(Customer customer) throws InvalidInputException {
+        String fName = customer.getfName();
+        String lName = customer.getlName();
+        String emailId = customer.getEmailId();
+        String dateOfBirth = customer.getDateOfBirth();
+        String mobileNo = customer.getMobileNo();
         if (!validateString(fName)) {
             throw new InvalidInputException(400, "First name should contain only alphabets");
         }
@@ -110,11 +110,11 @@ public class Validator {
      * @param obj object of product class
      * @throws InvalidInputException for throwing user error
      */
-    public boolean validateProduct(ProductModel obj) throws InvalidInputException {
-        String name = obj.getProdName();
-        String desc = obj.getDescription();
-        String type = obj.getType();
-        int qt = obj.getQuantity();
+    public boolean validateProduct(Product product) throws InvalidInputException {
+        String name = product.getProdName();
+        String desc = product.getDescription();
+        String type =product.getType();
+        int qt = product.getQuantity();
 
         if (!validateString(name)) {
             throw new InvalidInputException(400, "name should contain only alphabets");
@@ -140,9 +140,8 @@ public class Validator {
         String prodIds = obj.getProductIds();
         int flag = 0;
         for (int i = 0; i < qt.length(); i++) {
-            if ((qt.charAt(i) >= '0' && qt.charAt(i) <= '9') || (qt.charAt(i) == ',')) {
-
-            } else {
+            if ((qt.charAt(i) >= '0' && qt.charAt(i) <= '9') || (qt.charAt(i) == ',')) { }
+            else {
                 flag = 1;
                 break;
             }
@@ -152,20 +151,21 @@ public class Validator {
         if (flag == 1)
             throw new InvalidInputException(400, "check the quantities");
 
-
-        for (int i = 0; i < prodIds.length(); i++) {
-            if ((prodIds.charAt(i) >= '1' && prodIds.charAt(i) <= '9') || (prodIds.charAt(i) == ',')) {
-
-            } else {
-                flag = 1;
-                break;
-            }
-
-        }
-
-        if (flag == 1) {
-            throw new InvalidInputException(400, "check the product ids");
-        }
         return true;
+    }
+
+
+    public void validateUUID(String s) throws InvalidInputException{
+         String uuidRegex = "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$";
+         Pattern pat = Pattern.compile(uuidRegex);
+         if(s==null|| pat.matcher(s).matches()==false){
+             throw new InvalidInputException(400, "Check the uuid");
+         }
+    }
+
+    public void validateQt(Integer n, int qt) throws InvalidInputException {
+        if(n>qt){
+            throw new InvalidInputException(400, "Check the quantities");
+        }
     }
 }

@@ -2,8 +2,8 @@ package ecommerce.service;
 
 import ecommerce.entity.Order;
 import ecommerce.exception.InvalidInputException;
-import ecommerce.model.CustomerModel;
-import ecommerce.model.ProductModel;
+import ecommerce.model.CustomerDisplayResponseModel;
+import ecommerce.model.ProductCreateRequestModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -70,7 +70,7 @@ public class ValidatorTest {
     @Test
     public void testValidateValidCustomer() throws InvalidInputException {
 
-        CustomerModel customerModel = new CustomerModel("akash", "gupta", "1234567890", "akash@gmail.com", "agra", "1998-02-14");
+        CustomerDisplayResponseModel customerModel = new CustomerDisplayResponseModel("akash", "gupta", "1234567890", "akash@gmail.com", "agra", "1998-02-14");
         assertEquals(true, validator.validateCustomer(customerModel));
 
 
@@ -79,7 +79,7 @@ public class ValidatorTest {
     @Test
     public void testValidateInValidCustomerFName() throws InvalidInputException {
         boolean thrown = false;
-        CustomerModel customerModel = new CustomerModel("akash1", "gupta", "1234567890", "akash@gmail.com", "agra", "1998-02-14");
+        CustomerDisplayResponseModel customerModel = new CustomerDisplayResponseModel("akash1", "gupta", "1234567890", "akash@gmail.com", "agra", "1998-02-14");
         try {
             validator.validateCustomer(customerModel);
 
@@ -92,7 +92,7 @@ public class ValidatorTest {
     @Test
     public void testValidateInValidCustomerLName() throws InvalidInputException {
         boolean thrown = false;
-        CustomerModel customerModel = new CustomerModel("akash", "gupta1", "1234567890", "akash@gmail.com", "agra", "1998-02-14");
+        CustomerDisplayResponseModel customerModel = new CustomerDisplayResponseModel("akash", "gupta1", "1234567890", "akash@gmail.com", "agra", "1998-02-14");
         try {
             validator.validateCustomer(customerModel);
 
@@ -104,7 +104,7 @@ public class ValidatorTest {
     @Test
     public void testValidateInValidCustomerEmail() throws InvalidInputException {
         boolean thrown = false;
-        CustomerModel customerModel = new CustomerModel("akash", "gupta", "1234567890", "akashgmail.com", "agra", "1998-02-14");
+        CustomerDisplayResponseModel customerModel = new CustomerDisplayResponseModel("akash", "gupta", "1234567890", "akashgmail.com", "agra", "1998-02-14");
         try {
             validator.validateCustomer(customerModel);
 
@@ -117,7 +117,7 @@ public class ValidatorTest {
     @Test
     public void testValidateInValidCustomerDob() throws InvalidInputException {
         boolean thrown = false;
-        CustomerModel customerModel=new CustomerModel("akash", "gupta1", "1234567890", "akash@gmail.com", "agra", "1998/02/14");
+        CustomerDisplayResponseModel customerModel=new CustomerDisplayResponseModel("akash", "gupta1", "1234567890", "akash@gmail.com", "agra", "1998/02/14");
         try {
             validator.validateCustomer(customerModel);
 
@@ -129,7 +129,7 @@ public class ValidatorTest {
     @Test
     public void testValidateInValidCustomerMoblie() throws InvalidInputException {
         boolean thrown = false;
-        CustomerModel customerModel = new CustomerModel("akash", "gupta", "12345890", "akash@gmail.com", "agra", "1998-02-14");
+        CustomerDisplayResponseModel customerModel = new CustomerDisplayResponseModel("akash", "gupta", "12345890", "akash@gmail.com", "agra", "1998-02-14");
         try {
             validator.validateCustomer(customerModel);
 
@@ -141,7 +141,7 @@ public class ValidatorTest {
     @Test
     public void testValidateValidProduct() throws InvalidInputException {
 
-        ProductModel productModel =new ProductModel("Aventus",123,"Perfume","EDP",12);
+        ProductCreateRequestModel productModel =new ProductCreateRequestModel("Aventus",123,"Perfume","EDP",12);
         assertEquals(true, validator.validateProduct(productModel));
 
 
@@ -149,7 +149,7 @@ public class ValidatorTest {
     @Test
     public void testValidateInValidProductName() throws InvalidInputException {
         boolean thrown = false;
-        ProductModel productModel =new ProductModel("Aventus1",123,"Perfume","EDP",12);
+        ProductCreateRequestModel productModel =new ProductCreateRequestModel("Aventus1",123,"Perfume","EDP",12);
         try {
             validator.validateProduct(productModel);
 
@@ -161,7 +161,7 @@ public class ValidatorTest {
     @Test
     public void testValidateInValidProductDesc() throws InvalidInputException {
         boolean thrown = false;
-        ProductModel productModel =new ProductModel("Aventus",123,"Perfume1","EDP",12);
+        ProductCreateRequestModel productModel =new ProductCreateRequestModel("Aventus",123,"Perfume1","EDP",12);
         try {
             validator.validateProduct(productModel);
 
@@ -173,7 +173,7 @@ public class ValidatorTest {
     @Test
     public void testValidateInValidProductQuantity() throws InvalidInputException {
         boolean thrown = false;
-        ProductModel productModel =new ProductModel("Aventus",123,"Perfume","EDP",-1);
+        ProductCreateRequestModel productModel =new ProductCreateRequestModel("Aventus",123,"Perfume","EDP",-1);
         try {
             validator.validateProduct(productModel);
 

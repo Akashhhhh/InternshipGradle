@@ -2,7 +2,7 @@ package ecommerce.dao;
 
 import ecommerce.entity.Product;
 import ecommerce.exception.ApplicationRuntimeException;
-import ecommerce.model.ProductModel;
+import ecommerce.model.ProductCreateRequestModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 public class ProductDaoTest {
      Connection con;
      Product product;
-     ProductModel productModel;
+     ProductCreateRequestModel productModel;
      PreparedStatement preparedStatement;
      ResultSet resultSet;
      ProductDao productDao;
@@ -34,7 +34,7 @@ public class ProductDaoTest {
         resultSet = Mockito.mock(ResultSet.class);
         productDao = new ProductDao();
         logger = Mockito.mock(Logger.class);
-        productModel = new ProductModel("Aventus",23,"perfume","EDP",34);
+        productModel = new ProductCreateRequestModel("Aventus",23,"perfume","EDP",34);
 
     }
     @Test

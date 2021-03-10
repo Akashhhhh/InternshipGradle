@@ -2,35 +2,31 @@ package ecommerce.model;
 
 import java.util.UUID;
 
-public class OrderModel {
-    UUID orderId=UUID.randomUUID();
+public class OrderCreateRequestModel {
+
     UUID custId;
 
     // @InvalidNameAnnotation
     private String orderName;
-
-    private float totalPrice;
+    private String emailId;
 
     private String quantity; // list of units of every product
     private String productIds;
-    private String emailId;
 
-    public OrderModel(){
+
+    public OrderCreateRequestModel() {
 
     }
-    public OrderModel(UUID custId, float totalPrice, String quantity, String productIds,String emailId){
-        this.custId=custId;
-        this.totalPrice = totalPrice;
+
+
+    public OrderCreateRequestModel(UUID custId, String quantity, String productIds, String orderName, String emailId) {
+        this.custId = custId;
         this.quantity = quantity;
         this.productIds = productIds;
+        this.orderName = orderName;
         this.emailId = emailId;
     }
-    public OrderModel(String orderName) {
-        this.orderName = orderName;
-    }
-    public UUID getOrderId() {
-        return orderId;
-    }
+
 
     public UUID getCustId() {
         return custId;
@@ -40,11 +36,6 @@ public class OrderModel {
         return orderName;
     }
 
-
-
-    public float getTotalPrice() {
-        return totalPrice;
-    }
 
     public String getQuantity() {
         return quantity;

@@ -6,7 +6,7 @@ import ecommerce.dao.OrderDao;
 import ecommerce.entity.Customer;
 import ecommerce.exception.ApplicationRuntimeException;
 import ecommerce.exception.InvalidInputException;
-import ecommerce.model.CustomerModel;
+import ecommerce.model.CustomerDisplayResponseModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,7 +22,7 @@ public class CustomerServiceTest {
 
      private Connection con;
      private Customer customer;
-     private CustomerModel customerModel;
+     private CustomerDisplayResponseModel customerModel;
      private LruCacheService lru;
      private CustomerDao customerDao;
     private Validator validator;
@@ -42,7 +42,7 @@ public class CustomerServiceTest {
         logger = Mockito.mock(Logger.class);
         orderService = Mockito.mock(OrderService.class);
         customerService = new CustomerService(customerDao, validator, logger,orderService);
-        customerModel = new CustomerModel("Akash", "Gupta", "1234567890", "akash@gmail.com", "Agra", "1998-02-18");
+        customerModel = new CustomerDisplayResponseModel("Akash", "Gupta", "1234567890", "akash@gmail.com", "Agra", "1998-02-18");
 
     }
 
